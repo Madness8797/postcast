@@ -1,11 +1,11 @@
 const CACHE = "ilpost-v2";
 const ASSETS = [
-  "/IlPostPodcast/",
-  "/IlPostPodcast/index.html",
-  "/IlPostPodcast/manifest.json",
-  "/IlPostPodcast/icon-180.png",
-  "/IlPostPodcast/icon-192.png",
-  "/IlPostPodcast/icon-512.png"
+  "/postcast/",
+  "/postcast/index.html",
+  "/postcast/manifest.json",
+  "/postcast/icon-180.png",
+  "/postcast/icon-192.png",
+  "/postcast/icon-512.png"
 ];
 
 // ── Install: precache della shell ────────────────────────────
