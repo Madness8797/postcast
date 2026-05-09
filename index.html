@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -9,251 +10,221 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Il Post Podcast — Mobile</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #ffffff;
-            --surface: #f2f2f2;
-            --text: #111111;
-            --muted: #666;
-            --accent: #111111;
-            --radius: 12px;
-            --safe-bottom: env(safe-area-inset-bottom);
+            --bg: #ffffff; --surface: #f2f2f2; --surface2: #e8e8e8;
+            --text: #111111; --muted: #666; --accent: #111111;
+            --border: rgba(0,0,0,0.08); --header-bg: rgba(255,255,255,0.95);
+            --radius: 12px; --safe-bottom: env(safe-area-inset-bottom);
         }
-
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0d0d0d; --surface: #1c1c1e; --surface2: #2c2c2e;
+                --text: #f0f0f0; --muted: #8e8e93; --accent: #ffffff;
+                --border: rgba(255,255,255,0.08); --header-bg: rgba(13,13,13,0.95);
+            }
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; transition: background 0.2s, color 0.2s; }
 
-        header {
-            position: sticky; top: 0; z-index: 100;
-            background: rgba(255,255,255,0.95); backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            padding: 10px 16px 10px;
-            display: flex; flex-direction: column; gap: 8px;
-        }
+        #ptr-indicator { position: fixed; top: 0; left: 0; right: 0; z-index: 999; display: flex; align-items: center; justify-content: center; height: 0; overflow: hidden; background: var(--header-bg); transition: height 0.15s ease; }
+        #ptr-spinner { width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: ptr-spin 0.7s linear infinite; opacity: 0; transition: opacity 0.2s; }
+        @keyframes ptr-spin { to { transform: rotate(360deg); } }
+
+        header { position: sticky; top: 0; z-index: 100; background: var(--header-bg); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; flex-direction: column; gap: 8px; }
         #header-logo-row { display: flex; justify-content: center; align-items: center; }
         #header-logo { height: 28px; width: auto; }
+        #header-logo-dark { height: 28px; width: auto; display: none; filter: brightness(0) invert(1); }
+        @media (prefers-color-scheme: dark) { #header-logo { display: none; } #header-logo-dark { display: block; } }
         #header-search-row { display: flex; align-items: center; gap: 12px; }
-
-        #back-btn {
-            display: none; background: var(--surface); border: none;
-            padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 14px;
-            cursor: pointer; white-space: nowrap;
-        }
-        #search {
-            flex: 1; height: 38px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1);
-            background: var(--surface); padding: 0 12px; font-size: 16px; outline: none;
-        }
+        #back-btn { display: none; background: var(--surface); border: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; white-space: nowrap; color: var(--text); }
+        #search { flex: 1; height: 38px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); padding: 0 12px; font-size: 16px; outline: none; color: var(--text); }
+        #search::placeholder { color: var(--muted); }
 
         main { padding: 16px; padding-bottom: 160px; padding-top: 8px; }
 
         #grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
         .card { cursor: pointer; transition: opacity 0.2s; position: relative; }
-        .card img { width: 100%; aspect-ratio: 1; border-radius: var(--radius); object-fit: cover; background: #eee; }
-        .card-name { font-size: 13px; font-weight: 700; margin-top: 6px; line-height: 1.3; }
-        .card.is-favorite img { outline: 2.5px solid #f5c518; outline-offset: -2px; border-radius: var(--radius); }
+        .card img { width: 100%; aspect-ratio: 1; border-radius: var(--radius); object-fit: cover; background: var(--surface); }
+        .card-name { font-size: 13px; font-weight: 700; margin-top: 6px; line-height: 1.3; color: var(--text); }
+        .card.is-favorite img { outline: 4px solid #f5c518; outline-offset: -2px; border-radius: var(--radius); }
 
-        .ep-item { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.08); }
-        .ep-thumb { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #eee; }
+        .ep-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+        .ep-thumb { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: var(--surface); }
         .ep-info { flex: 1; min-width: 0; }
-        .ep-title { font-size: 14px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
+        .ep-title { font-size: 14px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; color: var(--text); }
         .ep-desc { font-size: 12px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .ep-play-btn {
-            width: 40px; height: 40px; border-radius: 50%; background: var(--accent);
-            border: none; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer;
-        }
 
-        #player {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
-            padding: 14px 20px calc(16px + var(--safe-bottom));
-            display: flex; flex-direction: column; gap: 10px;
-            transform: translateY(100%); transition: transform 0.35s cubic-bezier(.4,0,.2,1);
-            box-shadow: 0 -4px 30px rgba(0,0,0,0.25);
-            border-radius: 20px 20px 0 0;
-        }
+        .ep-play-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); border: none; color: var(--bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.1s; }
+        .ep-play-btn:active { transform: scale(0.92); }
+
+        #player { position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%); padding: 14px 20px calc(16px + var(--safe-bottom)); display: flex; flex-direction: column; gap: 10px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(.4,0,.2,1); box-shadow: 0 -4px 30px rgba(0,0,0,0.25); border-radius: 20px 20px 0 0; }
         #player.visible { transform: translateY(0); }
         #player-top { display: flex; align-items: center; gap: 12px; }
         #player-middle { display: flex; justify-content: center; align-items: center; gap: 8px; }
-
-        #p-thumb {
-            width: 52px; height: 52px; border-radius: 10px;
-            object-fit: cover; flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4); cursor: pointer;
-        }
+        #p-thumb { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4); cursor: pointer; }
         .p-meta { flex: 1; min-width: 0; }
         .p-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ffffff; }
         .p-pod { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
-
-        .p-ctrl-btn {
-            background: none; border: none; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 4px; color: rgba(255,255,255,0.75); gap: 1px;
-            border-radius: 8px; transition: background 0.15s;
-            -webkit-tap-highlight-color: transparent;
-            flex-shrink: 0;
-        }
+        .p-ctrl-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; color: rgba(255,255,255,0.75); border-radius: 8px; transition: background 0.15s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
         .p-ctrl-btn:active { background: rgba(255,255,255,0.1); }
-
-        #pp-bar {
-            width: 46px; height: 46px; border-radius: 50%;
-            background: #ffffff; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-            transition: transform 0.1s, box-shadow 0.1s;
-            -webkit-tap-highlight-color: transparent;
-            flex-shrink: 0;
-        }
-        #pp-bar:active { transform: scale(0.93); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-
+        #pp-bar { width: 46px; height: 46px; border-radius: 50%; background: #ffffff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.3); transition: transform 0.1s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
+        #pp-bar:active { transform: scale(0.93); }
         #player-timeline { display: flex; flex-direction: column; gap: 4px; }
-        #prog-bar {
-            width: 100%; height: 20px; background: transparent;
-            cursor: pointer; position: relative;
-            display: flex; align-items: center; touch-action: none;
-        }
+        #prog-bar { width: 100%; height: 20px; background: transparent; cursor: pointer; position: relative; display: flex; align-items: center; touch-action: none; }
         #prog-track { position: absolute; left: 0; right: 0; height: 6px; background: rgba(255,255,255,0.2); border-radius: 6px; }
         #prog-fill { height: 100%; background: #e94560; width: 0%; border-radius: 6px; pointer-events: none; position: relative; transition: width 0.1s linear; }
-        #prog-thumb {
-            position: absolute; right: -9px; top: 50%; transform: translateY(-50%);
-            width: 18px; height: 18px; border-radius: 50%;
-            background: #ffffff; pointer-events: none;
-            box-shadow: 0 0 6px rgba(0,0,0,0.4); transition: transform 0.1s;
-        }
-        #prog-bar:active #prog-thumb { transform: translateY(-50%) scale(1.3); }
+        #prog-thumb { position: absolute; right: -9px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; border-radius: 50%; background: #ffffff; pointer-events: none; box-shadow: 0 0 6px rgba(0,0,0,0.4); }
         #time-row { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.45); padding: 0 2px; }
 
-        /* Player espanso */
-        #player-expanded {
-            position: fixed; inset: 0; z-index: 300;
-            background: linear-gradient(160deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%);
-            display: flex; flex-direction: column;
-            padding: 0 24px calc(16px + var(--safe-bottom));
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(.4,0,.2,1);
-            overflow: hidden;
-            justify-content: space-between;
-            height: 100dvh;
-            max-height: 100dvh;
-        }
+        #player-expanded { position: fixed; inset: 0; z-index: 300; background: linear-gradient(160deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%); display: flex; flex-direction: column; align-items: center; padding: env(safe-area-inset-top, 12px) 24px calc(32px + var(--safe-bottom)); transform: translateY(100%); transition: transform 0.4s cubic-bezier(.4,0,.2,1); overflow: hidden; justify-content: space-between; height: 100dvh; max-height: 100dvh; }
         #player-expanded.visible { transform: translateY(0); }
-
-        #exp-topbar {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 0 4px; position: relative;
-            flex-shrink: 0;
-        }
-        #exp-podcast-name {
-            position: absolute; left: 50%; transform: translateX(-50%);
-            font-size: 13px; font-weight: 700;
-            color: rgba(255,255,255,0.6); letter-spacing: 0.3px;
-            text-align: center; pointer-events: none;
-            max-width: 55%;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        #exp-close-btn {
-            background: none; border: none; cursor: pointer;
-            color: rgba(255,255,255,0.7); padding: 8px;
-            display: flex; align-items: center;
-            flex-shrink: 0;
-        }
-
-        #exp-cover { display: flex; align-items: center; justify-content: center; padding: 12px 0; flex-shrink: 0; }
-        #exp-cover img {
-            width: min(260px, 55vw); height: min(260px, 55vw);
-            border-radius: 16px; object-fit: cover;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-        }
-
-        #exp-meta { margin-bottom: 12px; flex-shrink: 0; }
-        #exp-title { font-size: 17px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 4px; }
+        #exp-topbar { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 8px 0; flex-shrink: 0; }
+        #exp-podcast-name { position: absolute; left: 50%; transform: translateX(-50%); font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); text-align: center; pointer-events: auto; max-width: 55%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+        #exp-close-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.7); padding: 8px; display: flex; align-items: center; }
+        #exp-cover { display: flex; align-items: center; justify-content: center; flex: 1; perspective: 1000px; padding: 4px 0; }
+        #exp-cover-inner { position: relative; width: min(320px, 82vw, 52vh); height: min(320px, 82vw, 52vh); transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(.4,0,.2,1); cursor: pointer; }
+        #exp-cover-inner.flipped { transform: rotateY(180deg); }
+        #exp-cover-front, #exp-cover-back { position: absolute; inset: 0; border-radius: 16px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        #exp-cover-front img { width: 100%; height: 100%; border-radius: 16px; object-fit: cover; box-shadow: 0 16px 48px rgba(0,0,0,0.5); }
+        #exp-cover-back { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 16px 48px rgba(0,0,0,0.5); transform: rotateY(180deg); display: flex; flex-direction: column; padding: 20px; overflow: hidden; }
+        #exp-cover-back-title { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; flex-shrink: 0; }
+        #exp-cover-back-text { font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85); overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: transparent transparent; }
+        #exp-cover-back-text::-webkit-scrollbar { width: 3px; }
+        #exp-cover-back-text::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; }
+        #exp-cover-back-text.scrolling::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.35); }
+        #exp-bottom { width: 100%; display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; }
+        #exp-meta { width: 100%; }
+        #exp-title { font-size: 17px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 3px; }
         #exp-author { font-size: 14px; color: rgba(255,255,255,0.55); }
-
-        #exp-timeline { margin-bottom: 10px; flex-shrink: 0; }
+        #exp-timeline { width: 100%; }
         #exp-prog-bar { width: 100%; height: 24px; background: transparent; cursor: pointer; position: relative; display: flex; align-items: center; touch-action: none; }
         #exp-prog-track { position: absolute; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.2); border-radius: 4px; }
         #exp-prog-fill { height: 100%; background: #e94560; width: 0%; border-radius: 4px; pointer-events: none; position: relative; transition: width 0.1s linear; }
         #exp-prog-thumb { position: absolute; right: -8px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 50%; background: #fff; pointer-events: none; box-shadow: 0 0 6px rgba(0,0,0,0.4); }
         #exp-time-row { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 6px; }
-
-        #exp-controls { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 4px; flex-shrink: 0; }
-        #exp-pp-btn {
-            width: 58px; height: 58px; border-radius: 50%;
-            background: #fff; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-            transition: transform 0.1s; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
-        }
+        #exp-controls { display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; }
+        #exp-pp-btn { width: 58px; height: 58px; border-radius: 50%; background: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.3); transition: transform 0.1s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
         #exp-pp-btn:active { transform: scale(0.93); }
-        .exp-ctrl-btn {
-            background: none; border: none; cursor: pointer;
-            color: rgba(255,255,255,0.8); padding: 8px;
-            display: flex; flex-direction: column; align-items: center;
-            gap: 2px; border-radius: 8px; -webkit-tap-highlight-color: transparent;
-        }
+        .exp-ctrl-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.8); padding: 8px; display: flex; align-items: center; border-radius: 8px; -webkit-tap-highlight-color: transparent; }
         .exp-ctrl-btn:active { background: rgba(255,255,255,0.1); }
 
-        /* Nuovi episodi */
-        #new-episodes-section { margin-bottom: 28px; display: none; }
-        #new-episodes-section h2 { font-size: 22px; margin-bottom: 16px; }
-        .new-ep-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.08); cursor: pointer; }
-        .new-ep-thumb { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: #eee; }
+        #new-episodes-section { margin-bottom: 24px; display: none; }
+        #new-episodes-section h2, #resume-section h2, #grid-title { font-size: 13px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text); margin-bottom: 12px; }
+        #grid-title { margin-bottom: 16px; }
+
+        .new-ep-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; flex-wrap: wrap; }
+        .new-ep-thumb { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--surface); }
         .new-ep-info { flex: 1; min-width: 0; }
-        .new-ep-podcast { font-size: 11px; color: var(--muted); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
-        .new-ep-title { font-size: 13px; font-weight: 700; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .new-ep-play { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); border: none; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+        .new-ep-title { font-size: 14px; font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .new-ep-meta { font-size: 12px; color: var(--muted); }
 
-        .star-btn {
-            position: absolute; top: 6px; right: 6px;
-            background: rgba(255,255,255,0.85); border: none; border-radius: 50%;
-            width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 24px; line-height: 1;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.18); transition: transform 0.15s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .star-btn:active { transform: scale(0.88); }
+        #resume-section { margin-bottom: 24px; display: none; }
+        .resume-card { background: var(--surface); border-radius: 14px; padding: 14px 10px 14px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; position: relative; overflow: hidden; margin-bottom: 10px; }
+        .resume-info { flex: 1; min-width: 0; }
+        .resume-title { font-size: 14px; font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .resume-meta { font-size: 12px; color: var(--muted); }
+        .resume-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--surface2); border-radius: 0 0 14px 14px; }
+        .resume-progress-fill { height: 100%; background: #00bcd4; border-radius: 0 0 14px 14px; }
 
-        #load-more-btn {
-            display: block; width: 100%; margin: 20px 0 8px; padding: 14px;
-            background: var(--surface); border: 1.5px solid rgba(0,0,0,0.12);
-            border-radius: var(--radius); font-family: 'Inter', system-ui, sans-serif;
-            font-size: 15px; font-weight: 700; color: var(--text);
-            cursor: pointer; transition: background 0.18s, opacity 0.18s;
-        }
-        #load-more-btn:active { background: #e0e0e0; }
+        .star-btn { position: absolute; top: 6px; right: 6px; background: none; border: none; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; -webkit-tap-highlight-color: transparent; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25)); }
+        .star-btn:active { transform: scale(0.82); }
+
+        #load-more-btn { display: block; width: 100%; margin: 20px 0 8px; padding: 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: 15px; font-weight: 700; color: var(--text); cursor: pointer; transition: background 0.18s, opacity 0.18s; }
+        #load-more-btn:active { background: var(--surface2); }
         #load-more-btn:disabled { opacity: 0.5; cursor: default; }
 
-        /* Bottone velocità — Liquid Glass */
-        #speed-btn, #exp-speed-btn {
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.35);
-            color: #ffffff;
-            font-family: 'Inter', system-ui, sans-serif;
-            font-size: 11px; font-weight: 700;
-            padding: 0; border-radius: 50%; cursor: pointer;
-            width: 38px; height: 38px;
-            text-align: center; display: flex; align-items: center; justify-content: center;
-            -webkit-tap-highlight-color: transparent;
-            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-            flex-shrink: 0;
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.35), inset 0 -1px 1px rgba(0,0,0,0.15);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
-        #speed-btn:active, #exp-speed-btn:active {
-            background: rgba(255,255,255,0.22); transform: scale(0.93);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.25), inset 0 -1px 1px rgba(0,0,0,0.1);
-        }
+        #speed-btn, #exp-speed-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); color: #ffffff; font-family: inherit; font-size: 11px; font-weight: 700; padding: 0; border-radius: 50%; cursor: pointer; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; flex-shrink: 0; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 2px 8px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.35); }
+        #speed-btn:active, #exp-speed-btn:active { background: rgba(255,255,255,0.22); transform: scale(0.93); }
+
+
+
+        /* ── Banner offline ─────────────────────────────────────── */
+        #offline-banner { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #ff9500; color: #fff; text-align: center; font-size: 13px; font-weight: 700; padding: 10px 16px; animation: slideDown 0.3s ease; }
+        #offline-banner.visible { display: block; }
+        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        /* ── Episodio già ascoltato ─────────────────────────────── */
+        .ep-item.listened { opacity: 0.52; }
+        .ep-item.listened .ep-title { color: var(--muted); }
+        .ep-listened-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: #4cd964; margin-top: 3px; }
+
+
+        /* ── Coda episodi ────────────────────────────────────────── */
+        #queue-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); color: #fff; border-radius: 50%; cursor: pointer; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; flex-shrink: 0; backdrop-filter: blur(12px); position: relative; }
+        #queue-btn:active { background: rgba(255,255,255,0.22); transform: scale(0.93); }
+        #queue-badge { position: absolute; top: -4px; right: -4px; background: #e94560; color: #fff; font-size: 9px; font-weight: 800; border-radius: 50%; width: 16px; height: 16px; display: none; align-items: center; justify-content: center; }
+        #queue-badge.visible { display: flex; }
+
+        #queue-panel { position: fixed; inset: 0; z-index: 250; display: flex; flex-direction: column; background: var(--bg); transform: translateY(100%); transition: transform 0.35s cubic-bezier(.4,0,.2,1); }
+        #queue-panel.visible { transform: translateY(0); }
+        #queue-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 12px; border-bottom: 1px solid var(--border); background: var(--header-bg); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1; flex-shrink: 0; }
+        #queue-header h2 { font-size: 17px; font-weight: 800; color: var(--text); }
+        #queue-close-btn { background: var(--surface); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); }
+        #queue-clear-btn { background: none; border: none; font-size: 13px; font-weight: 600; color: #e94560; cursor: pointer; padding: 4px 8px; }
+        #queue-list { flex: 1; overflow-y: auto; padding: 8px 16px 120px; -webkit-overflow-scrolling: touch; }
+        #queue-empty { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px; text-align: center; }
+        #queue-empty.visible { display: flex; }
+        #queue-empty svg { color: var(--muted); margin-bottom: 16px; }
+        #queue-empty p { font-size: 14px; color: var(--muted); }
+
+        .queue-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .queue-item img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+        .queue-item-info { flex: 1; min-width: 0; }
+        .queue-item-title { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .queue-item-pod { font-size: 11px; color: var(--muted); }
+        .queue-item-play { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); border: none; color: var(--bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+        .queue-item-remove { background: none; border: none; color: var(--muted); padding: 6px; cursor: pointer; flex-shrink: 0; }
+        .queue-item-remove:active { color: #e94560; }
+
+        .ep-queue-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s; }
+        .ep-queue-btn:active { background: var(--accent); color: var(--bg); }
+        .ep-queue-btn.in-queue { background: var(--accent); color: var(--bg); }
+
+        /* ── Drag & drop coda ───────────────────────────────────── */
+        .queue-item { touch-action: none; user-select: none; transition: background 0.15s, box-shadow 0.15s, opacity 0.15s; border-radius: 10px; margin: 2px -8px; padding: 12px 8px; }
+        .queue-item.dragging { opacity: 0.35; background: var(--surface); box-shadow: none; }
+        .queue-item.drag-over { background: var(--surface2); box-shadow: inset 0 2px 0 var(--accent); }
+        .queue-drag-handle { color: var(--muted); padding: 6px 4px 6px 0; cursor: grab; flex-shrink: 0; touch-action: none; display: flex; align-items: center; }
+        .queue-drag-handle:active { cursor: grabbing; color: var(--text); }
+        /* ── Vista lista podcast ────────────────────────────────── */
+        .pod-list-item { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--border); cursor: pointer; position: relative; }
+        .pod-list-item img { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: var(--surface); }
+        .pod-list-item.is-favorite img { outline: 3px solid #f5c518; outline-offset: -1px; border-radius: 10px; }
+        .pod-list-info { flex: 1; min-width: 0; }
+        .pod-list-title { font-size: 14px; font-weight: 700; line-height: 1.3; color: var(--text); margin-bottom: 3px; }
+        .pod-list-author { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+        .pod-list-desc { font-size: 12px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.45; }
+        .pod-list-star { position: absolute; top: 10px; right: 0; background: none; border: none; padding: 4px; cursor: pointer; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); -webkit-tap-highlight-color: transparent; }
+        .pod-list-star:active { transform: scale(0.82); }
+
+        /* ── Toggle griglia/lista ───────────────────────────────── */
+        #view-toggle { display: flex; gap: 6px; }
+        .vtoggle-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; cursor: pointer; color: var(--muted); display: flex; align-items: center; transition: background 0.15s, color 0.15s; }
+        .vtoggle-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+        .vtoggle-btn:active { opacity: 0.75; }
+        #grid-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        #grid-title { margin-bottom: 0; }
+        #grid.list-mode { display: block; }
+        /* ── Empty state ricerca ────────────────────────────────── */
+        #empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; text-align: center; }
+        #empty-state.visible { display: flex; }
+        #empty-state svg { color: var(--muted); margin-bottom: 16px; animation: es-float 3s ease-in-out infinite; }
+        @keyframes es-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        #empty-state .es-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+        #empty-state .es-sub { font-size: 13px; color: var(--muted); }
+        #empty-state .es-query { color: var(--text); font-style: italic; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
 </head>
 <body>
 
+<div id="offline-banner">📡 Sei offline — i contenuti potrebbero non essere aggiornati</div>
+<div id="ptr-indicator"><div id="ptr-spinner"></div></div>
+
 <header>
     <div id="header-logo-row">
         <img id="header-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Il_Post_logo.svg/3840px-Il_Post_logo.svg.png" alt="Il Post">
+        <img id="header-logo-dark" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Il_Post_logo.svg/3840px-Il_Post_logo.svg.png" alt="Il Post">
     </div>
     <div id="header-search-row">
         <button id="back-btn">←</button>
@@ -263,20 +234,33 @@
 
 <main>
     <div id="view-grid">
-        <div id="new-episodes-section">
-            <h2>Nuovi episodi</h2>
-            <div id="new-episodes-list"></div>
+        <div id="resume-section"><h2>Da finire</h2><div id="resume-list"></div></div>
+        <div id="new-episodes-section"><h2>Nuovi episodi</h2><div id="new-episodes-list"></div></div>
+        <div id="grid-title-row">
+            <h2 id="grid-title">Tutti i podcast</h2>
+            <div id="view-toggle">
+                <button class="vtoggle-btn active" id="btn-grid" aria-label="Vista griglia" title="Griglia">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                </button>
+                <button class="vtoggle-btn" id="btn-list" aria-label="Vista elenco" title="Elenco">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>
+                </button>
+            </div>
         </div>
-        <h2 id="grid-title" style="margin-bottom:16px; font-size:22px;">Tutti i podcast</h2>
         <div id="grid"></div>
+        <div id="empty-state">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <line x1="8" y1="11" x2="14" y2="11"/>
+            </svg>
+            <div class="es-title">Nessun podcast trovato</div>
+            <div class="es-sub">Nessun risultato per <span class="es-query" id="es-query-text"></span></div>
+        </div>
     </div>
     <div id="view-detail" style="display:none;">
-        <div id="pod-hero" style="margin-bottom:20px; display:flex; gap:16px; align-items:center;">
-            <img id="pd-img" style="width:100px; height:100px; border-radius:12px; object-fit:cover;">
-            <div>
-                <h2 id="pd-title" style="font-size:20px;"></h2>
-                <p id="pd-author" style="color:var(--muted); font-size:14px;"></p>
-            </div>
+        <div id="pod-hero" style="margin-bottom:20px;display:flex;gap:16px;align-items:center;">
+            <img id="pd-img" style="width:100px;height:100px;border-radius:12px;object-fit:cover;">
+            <div><h2 id="pd-title" style="font-size:20px;"></h2><p id="pd-author" style="color:var(--muted);font-size:14px;"></p></div>
         </div>
         <div id="ep-items"></div>
     </div>
@@ -289,515 +273,990 @@
             <div class="p-title" id="p-title">Nessun episodio in riproduzione</div>
             <div class="p-pod" id="p-pod">Il Post</div>
         </div>
-        <button id="speed-btn" title="Velocità di riproduzione">1x</button>
+        <button id="speed-btn">1x</button>
+        <button id="queue-btn" aria-label="Coda">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/><circle cx="18" cy="16" r="3" fill="currentColor" stroke="none"/><polyline points="18 13 18 19" stroke="currentColor"/></svg>
+            <span id="queue-badge"></span>
+        </button>
     </div>
     <div id="player-middle">
-        <button class="p-ctrl-btn" id="prev-ep-btn" title="Episodio precedente">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,20 9,12 19,4"/><rect x="5" y="4" width="3" height="16" rx="1"/></svg>
-        </button>
-        <button class="p-ctrl-btn" id="skip-back-btn" title="Indietro 10s">
+        <button class="p-ctrl-btn" id="prev-ep-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,20 9,12 19,4"/><rect x="5" y="4" width="3" height="16" rx="1"/></svg></button>
+        <button class="p-ctrl-btn" id="skip-back-btn">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-                <text x="12" y="14.5" text-anchor="middle" font-size="5.5" font-family="Inter,system-ui,sans-serif" font-weight="700" fill="currentColor">10</text>
+                <text x="12" y="14.5" text-anchor="middle" font-size="5.5" font-family="system-ui,sans-serif" font-weight="700" fill="currentColor">10</text>
             </svg>
         </button>
         <button id="pp-bar">
             <svg id="play-svg" width="22" height="22" viewBox="0 0 24 24" fill="#1a1a2e"><polygon points="6,3 20,12 6,21"/></svg>
-            <svg id="pause-svg" width="22" height="22" viewBox="0 0 24 24" fill="#1a1a2e" style="display:none">
-                <rect x="5" y="3" width="4" height="18" rx="1.5"/><rect x="15" y="3" width="4" height="18" rx="1.5"/>
-            </svg>
+            <svg id="pause-svg" width="22" height="22" viewBox="0 0 24 24" fill="#1a1a2e" style="display:none"><rect x="5" y="3" width="4" height="18" rx="1.5"/><rect x="15" y="3" width="4" height="18" rx="1.5"/></svg>
         </button>
-        <button class="p-ctrl-btn" id="skip-fwd-btn" title="Avanti 10s">
+        <button class="p-ctrl-btn" id="skip-fwd-btn">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
-                <text x="12" y="14.5" text-anchor="middle" font-size="5.5" font-family="Inter,system-ui,sans-serif" font-weight="700" fill="currentColor">10</text>
+                <text x="12" y="14.5" text-anchor="middle" font-size="5.5" font-family="system-ui,sans-serif" font-weight="700" fill="currentColor">10</text>
             </svg>
         </button>
-        <button class="p-ctrl-btn" id="next-ep-btn" title="Episodio successivo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,4 15,12 5,20"/><rect x="16" y="4" width="3" height="16" rx="1"/></svg>
-        </button>
+        <button class="p-ctrl-btn" id="next-ep-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,4 15,12 5,20"/><rect x="16" y="4" width="3" height="16" rx="1"/></svg></button>
     </div>
     <div id="player-timeline">
         <div id="prog-bar"><div id="prog-track"><div id="prog-fill"><div id="prog-thumb"></div></div></div></div>
-        <div id="time-row">
-            <span id="time-current">0:00</span>
-            <span id="time-total">0:00</span>
-        </div>
+        <div id="time-row"><span id="time-current">0:00</span><span id="time-total">0:00</span></div>
     </div>
 </div>
 
+
+<div id="queue-panel">
+    <div id="queue-header">
+        <h2>Coda</h2>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <button id="queue-clear-btn">Svuota</button>
+            <button id="queue-close-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+        </div>
+    </div>
+    <div id="queue-list">
+        <div id="queue-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/></svg>
+            <p>La coda è vuota.<br>Aggiungi episodi con il tasto <strong>+</strong>.</p>
+        </div>
+    </div>
+</div>
 <audio id="audio"></audio>
 
 <div id="player-expanded">
     <div id="exp-topbar">
-        <button id="exp-close-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
+        <button id="exp-close-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button>
         <span id="exp-podcast-name"></span>
-        <button id="exp-speed-btn" title="Velocità di riproduzione">1x</button>
+        <button id="exp-speed-btn">1x</button>
     </div>
-    <div id="exp-cover"><img id="exp-cover-img" src=""></div>
-    <div id="exp-meta">
-        <div id="exp-title"></div>
-        <div id="exp-author"></div>
-    </div>
-    <div id="exp-timeline">
-        <div id="exp-prog-bar">
-            <div id="exp-prog-track"><div id="exp-prog-fill"><div id="exp-prog-thumb"></div></div></div>
-        </div>
-        <div id="exp-time-row">
-            <span id="exp-time-current">0:00</span>
-            <span id="exp-time-total">0:00</span>
+    <div id="exp-cover">
+        <div id="exp-cover-inner">
+            <div id="exp-cover-front"><img id="exp-cover-img" src=""></div>
+            <div id="exp-cover-back">
+                <div id="exp-cover-back-title">Descrizione episodio</div>
+                <div id="exp-cover-back-text"></div>
+            </div>
         </div>
     </div>
-    <div id="exp-controls">
-        <button class="exp-ctrl-btn" id="exp-prev-btn">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,20 9,12 19,4"/><rect x="5" y="4" width="3" height="16" rx="1"/></svg>
-        </button>
-        <button class="exp-ctrl-btn" id="exp-skip-back-btn">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-                <text x="12" y="14.5" text-anchor="middle" font-size="5.5" font-family="Inter,system-ui,sans-serif" font-weight="700" fill="currentColor">10</text>
-            </svg>
-        </button>
-        <button id="exp-pp-btn">
-            <svg id="exp-play-svg" width="26" height="26" viewBox="0 0 24 24" fill="#1a1a2e"><polygon points="6,3 20,12 6,21"/></svg>
-            <svg id="exp-pause-svg" width="26" height="26" viewBox="0 0 24 24" fill="#1a1a2e" style="display:none">
-                <rect x="5" y="3" width="4" height="18" rx="1.5"/><rect x="15" y="3" width="4" height="18" rx="1.5"/>
-            </svg>
-        </button>
-        <button class="exp-ctrl-btn" id="exp-skip-fwd-btn">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
-                <text x="12" y="14.5" text-anchor="middle" font-size="5.5" font-family="Inter,system-ui,sans-serif" font-weight="700" fill="currentColor">10</text>
-            </svg>
-        </button>
-        <button class="exp-ctrl-btn" id="exp-next-btn">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,4 15,12 5,20"/><rect x="16" y="4" width="3" height="16" rx="1"/></svg>
-        </button>
+    <div id="exp-bottom">
+        <div id="exp-meta"><div id="exp-title"></div><div id="exp-author"></div></div>
+        <div id="exp-timeline">
+            <div id="exp-prog-bar"><div id="exp-prog-track"><div id="exp-prog-fill"><div id="exp-prog-thumb"></div></div></div></div>
+            <div id="exp-time-row"><span id="exp-time-current">0:00</span><span id="exp-time-total">0:00</span></div>
+        </div>
+        <div id="exp-controls">
+            <button class="exp-ctrl-btn" id="exp-prev-btn"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,20 9,12 19,4"/><rect x="5" y="4" width="3" height="16" rx="1"/></svg></button>
+            <button class="exp-ctrl-btn" id="exp-skip-back-btn">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                    <text x="12" y="14.5" text-anchor="middle" font-size="5.5" font-family="system-ui,sans-serif" font-weight="700" fill="currentColor">10</text>
+                </svg>
+            </button>
+            <button id="exp-pp-btn">
+                <svg id="exp-play-svg" width="26" height="26" viewBox="0 0 24 24" fill="#1a1a2e"><polygon points="6,3 20,12 6,21"/></svg>
+                <svg id="exp-pause-svg" width="26" height="26" viewBox="0 0 24 24" fill="#1a1a2e" style="display:none"><rect x="5" y="3" width="4" height="18" rx="1.5"/><rect x="15" y="3" width="4" height="18" rx="1.5"/></svg>
+            </button>
+            <button class="exp-ctrl-btn" id="exp-skip-fwd-btn">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
+                    <text x="12" y="14.5" text-anchor="middle" font-size="5.5" font-family="system-ui,sans-serif" font-weight="700" fill="currentColor">10</text>
+                </svg>
+            </button>
+            <button class="exp-ctrl-btn" id="exp-next-btn"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,4 15,12 5,20"/><rect x="16" y="4" width="3" height="16" rx="1"/></svg></button>
+        </div>
     </div>
 </div>
 
 <script>
-    const audio = document.getElementById('audio');
-    const playerBar = document.getElementById('player');
-    const grid = document.getElementById('grid');
-    const viewGrid = document.getElementById('view-grid');
-    const viewDetail = document.getElementById('view-detail');
-    const backBtn = document.getElementById('back-btn');
-    const searchInput = document.getElementById('search');
-    let allPodcasts = [];
+const audio = document.getElementById('audio');
+const playerBar = document.getElementById('player');
+const grid = document.getElementById('grid');
+const viewGrid = document.getElementById('view-grid');
+const viewDetail = document.getElementById('view-detail');
+const backBtn = document.getElementById('back-btn');
+const searchInput = document.getElementById('search');
+let allPodcasts = [];
 
-    function setupMediaSession(title, author, image) {
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: decodeHTML(title), artist: decodeHTML(author),
-                artwork: [{ src: image, sizes: '512x512', type: 'image/jpeg' }]
-            });
-            navigator.mediaSession.setActionHandler('play', () => audio.play());
-            navigator.mediaSession.setActionHandler('pause', () => audio.pause());
-            navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 10);
-            navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 10);
-            navigator.mediaSession.setActionHandler('previoustrack', () => playEpisodeAtIndex(currentEpisodeIndex - 1));
-            navigator.mediaSession.setActionHandler('nexttrack', () => playEpisodeAtIndex(currentEpisodeIndex + 1));
+// ── Pull to refresh ──────────────────────────────────────────
+(function() {
+    let startY = null, pulling = false;
+    const threshold = 80;
+    const indicator = document.getElementById('ptr-indicator');
+    const spinner = document.getElementById('ptr-spinner');
+    document.addEventListener('touchstart', (e) => {
+        if (document.getElementById('player-expanded').classList.contains('visible')) return;
+        if (window.scrollY === 0) startY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchmove', (e) => {
+        if (startY === null) return;
+        const dy = e.touches[0].clientY - startY;
+        if (dy > 10) {
+            pulling = true;
+            const p = Math.min(dy / threshold, 1);
+            indicator.style.height = (p * 56) + 'px';
+            spinner.style.opacity = p;
+            spinner.style.transform = `rotate(${p * 180}deg)`;
         }
-    }
+    }, { passive: true });
+    document.addEventListener('touchend', (e) => {
+        if (pulling && startY !== null) {
+            const dy = e.changedTouches[0].clientY - startY;
+            if (dy > threshold) { indicator.style.height = '56px'; spinner.style.opacity = '1'; setTimeout(() => location.reload(), 300); }
+            else { indicator.style.height = '0'; spinner.style.opacity = '0'; }
+        }
+        startY = null; pulling = false;
+    }, { passive: true });
+})();
 
-    async function init() {
-        const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
-        const url = encodeURIComponent('https://api-prod.ilpost.it/podcast/v1/podcast/?pg=1&hits=100');
-        try {
-            const res = await fetch(proxy + url);
-            const json = await res.json();
-            allPodcasts = (json.data || []).sort((a, b) => a.title.localeCompare(b.title));
-            renderPodcasts(allPodcasts);
-            renderFavorites();
-            loadNewEpisodes();
-        } catch (e) { console.error("Errore fetch", e); }
-    }
+// ── Flip copertina ───────────────────────────────────────────
+document.getElementById('exp-cover-inner').addEventListener('click', () => {
+    document.getElementById('exp-cover-inner').classList.toggle('flipped');
+});
 
-    let favorites = JSON.parse(localStorage.getItem('podcast_favorites') || '[]');
-    function saveFavorites() { localStorage.setItem('podcast_favorites', JSON.stringify(favorites)); }
-    function isFavorite(id) { return favorites.includes(id); }
+// ── Scrollbar descrizione ────────────────────────────────────
+(function() {
+    const el = document.getElementById('exp-cover-back-text');
+    let timer;
+    el.addEventListener('scroll', () => {
+        el.classList.add('scrolling');
+        clearTimeout(timer);
+        timer = setTimeout(() => el.classList.remove('scrolling'), 800);
+    });
+})();
 
-    function toggleFavorite(e, p) {
-        e.stopPropagation();
-        if (isFavorite(p.id)) { favorites = favorites.filter(f => f !== p.id); }
-        else { favorites.push(p.id); }
-        saveFavorites();
-        renderPodcasts(allPodcasts.filter(pod =>
-            pod.title.toLowerCase().includes(searchInput.value.toLowerCase().trim()) ||
-            pod.author.toLowerCase().includes(searchInput.value.toLowerCase().trim())
-        ));
-        renderFavorites();
-    }
+// ── Helpers ──────────────────────────────────────────────────
+function stripHTML(html) {
+    const tmp = document.createElement('div'); tmp.innerHTML = html;
+    return (tmp.textContent || tmp.innerText || '').trim();
+}
+function decodeHTML(str) {
+    const txt = document.createElement('textarea'); txt.innerHTML = str; return txt.value;
+}
+function formatTime(s) {
+    if (isNaN(s) || !isFinite(s)) return '0:00';
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+function formatDate(ts) {
+    if (!ts) return '';
+    return new Date(ts * 1000).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function formatDuration(sec) { if (!sec) return ''; return Math.round(sec / 60) + ' min'; }
 
-    function buildCard(p) {
-        const el = document.createElement('div');
-        el.className = isFavorite(p.id) ? 'card is-favorite' : 'card';
-        const starred = isFavorite(p.id) ? '★' : '☆';
-        el.innerHTML = `
-            <img src="${p.image}" loading="lazy">
-            <button class="star-btn" title="Aggiungi ai preferiti">${starred}</button>
-            <div class="card-name">${decodeHTML(p.title)}</div>`;
-        el.onclick = () => openPodcast(p);
-        el.querySelector('.star-btn').onclick = (e) => toggleFavorite(e, p);
-        return el;
-    }
+// ── Progresso ────────────────────────────────────────────────
+function saveProgress(podcastId, episodeId, currentTime) {
+    if (!episodeId || !podcastId) return;
+    localStorage.setItem(`progress_${podcastId}_${episodeId}`, currentTime);
+}
+function loadProgress(podcastId, episodeId) {
+    return parseFloat(localStorage.getItem(`progress_${podcastId}_${episodeId}`) || '0');
+}
+function saveLastEpisode(podcastId, epData) {
+    localStorage.setItem(`last_ep_${podcastId}`, JSON.stringify(epData));
+}
+function loadLastEpisode(podcastId) {
+    try { return JSON.parse(localStorage.getItem(`last_ep_${podcastId}`) || 'null'); } catch { return null; }
+}
+function getProgressRatio(podcastId, episodeId, duration) {
+    if (!duration) return 0;
+    return Math.min(loadProgress(podcastId, episodeId) / duration, 1);
+}
 
-    async function loadNewEpisodes() {
-        const section = document.getElementById('new-episodes-section');
-        const list = document.getElementById('new-episodes-list');
-        const favPodcasts = allPodcasts.filter(p => isFavorite(p.id));
-        if (favPodcasts.length === 0) { section.style.display = 'none'; return; }
-        const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
-        const results = await Promise.all(favPodcasts.map(p =>
-            fetch(proxy + encodeURIComponent(`https://api-prod.ilpost.it/podcast/v1/podcast/${p.id}/?pg=1&hits=1`))
-                .then(r => r.json())
-                .then(json => json.data && json.data[0] ? { ep: json.data[0], podcast: p } : null)
-                .catch(() => null)
-        ));
-        const episodes = results.filter(Boolean).sort((a, b) => b.ep.timestamp - a.ep.timestamp).slice(0, 5);
-        list.innerHTML = '';
-        episodes.forEach(({ ep, podcast }) => {
-            const item = document.createElement('div');
-            item.className = 'new-ep-item';
-            item.innerHTML = `
-                <img class="new-ep-thumb" src="${ep.image || podcast.image}">
-                <div class="new-ep-info">
-                    <div class="new-ep-podcast">${decodeHTML(podcast.title)}</div>
-                    <div class="new-ep-title">${decodeHTML(ep.title)}</div>
-                </div>
-                <button class="new-ep-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>`;
-            item.onclick = async (e) => {
-                e.stopPropagation();
-                if (!currentPodcast || currentPodcast.id !== podcast.id) {
-                    currentPodcast = podcast; currentPage = 1;
-                    const res = await fetch(proxy + encodeURIComponent(`https://api-prod.ilpost.it/podcast/v1/podcast/${podcast.id}/?pg=1&hits=${HITS_PER_PAGE}`));
-                    const json = await res.json();
-                    currentEpisodeList = json.data || [];
-                }
-                currentEpisodeIndex = currentEpisodeList.findIndex(e => e.id === ep.id);
-                if (currentEpisodeIndex === -1) currentEpisodeIndex = 0;
-                play(ep.episode_raw_url, ep.title, ep.author || podcast.author, ep.image || podcast.image);
-                updatePrevNextButtons();
-            };
-            list.appendChild(item);
-        });
-        section.style.display = episodes.length > 0 ? 'block' : 'none';
-    }
+// ── Componenti riutilizzabili ─────────────────────────────────
+function makePlayBtn(onPlay) {
+    const btn = document.createElement('button');
+    btn.className = 'ep-play-btn';
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg>`;
+    btn.addEventListener('click', (e) => { e.stopPropagation(); onPlay(); });
+    return btn;
+}
 
-    function renderFavorites() {}
+// ── Media Session ─────────────────────────────────────────────
+function setupMediaSession(title, author, image) {
+    if (!('mediaSession' in navigator)) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: decodeHTML(title), artist: decodeHTML(author),
+        artwork: [{ src: image, sizes: '512x512', type: 'image/jpeg' }]
+    });
+    navigator.mediaSession.setActionHandler('play', () => audio.play());
+    navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+    navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 10);
+    navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 10);
+    navigator.mediaSession.setActionHandler('previoustrack', () => playEpisodeAtIndex(currentEpisodeIndex - 1));
+    navigator.mediaSession.setActionHandler('nexttrack', () => playEpisodeAtIndex(currentEpisodeIndex + 1));
+}
 
-    function renderPodcasts(list) {
-        grid.innerHTML = '';
-        const favs = list.filter(p => isFavorite(p.id));
-        const others = list.filter(p => !isFavorite(p.id));
-        [...favs, ...others].forEach(p => grid.appendChild(buildCard(p)));
-    }
-
-    searchInput.oninput = (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        renderPodcasts(allPodcasts.filter(p =>
-            p.title.toLowerCase().includes(query) || p.author.toLowerCase().includes(query)
-        ));
-    };
-
-    let currentPodcast = null;
-    let currentPage = 1;
-    const HITS_PER_PAGE = 20;
-    let currentEpisodeList = [];
-    let currentEpisodeIndex = -1;
-
-    function decodeHTML(str) {
-        const txt = document.createElement('textarea');
-        txt.innerHTML = str;
-        return txt.value;
-    }
-
-    function playEpisodeAtIndex(index) {
-        if (index < 0 || index >= currentEpisodeList.length) return;
-        currentEpisodeIndex = index;
-        const ep = currentEpisodeList[index];
-        play(ep.episode_raw_url, ep.title, ep.author || currentPodcast.author, ep.image || currentPodcast.image);
-        updatePrevNextButtons();
-    }
-
-    function updatePrevNextButtons() {
-        document.getElementById('prev-ep-btn').style.opacity = currentEpisodeIndex > 0 ? '1' : '0.3';
-        document.getElementById('next-ep-btn').style.opacity = currentEpisodeIndex < currentEpisodeList.length - 1 ? '1' : '0.3';
-    }
-
-    function renderEpisodes(episodes, podcastImage) {
-        const container = document.getElementById('ep-items');
-        const existingBtn = document.getElementById('load-more-btn');
-        if (existingBtn) existingBtn.remove();
-        episodes.forEach(ep => {
-            const item = document.createElement('div');
-            item.className = 'ep-item';
-            item.innerHTML = `
-                <img class="ep-thumb" src="${ep.image || podcastImage}">
-                <div class="ep-info">
-                    <div class="ep-title">${decodeHTML(ep.title)}</div>
-                    <div class="ep-desc">${decodeHTML(ep.description || '')}</div>
-                </div>
-                <button class="ep-play-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>`;
-            const epIndex = episodes.indexOf(ep);
-            item.onclick = (e) => {
-                e.stopPropagation();
-                currentEpisodeIndex = epIndex;
-                play(ep.episode_raw_url, ep.title, ep.author || currentPodcast.author, ep.image || podcastImage);
-                updatePrevNextButtons();
-            };
-            container.appendChild(item);
-        });
-    }
-
-    async function loadMoreEpisodes() {
-        if (!currentPodcast) return;
-        const btn = document.getElementById('load-more-btn');
-        btn.textContent = 'Caricamento…'; btn.disabled = true;
-        currentPage++;
-        const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
-        const res = await fetch(proxy + encodeURIComponent(`https://api-prod.ilpost.it/podcast/v1/podcast/${currentPodcast.id}/?pg=${currentPage}&hits=${HITS_PER_PAGE}`));
+// ── Init ──────────────────────────────────────────────────────
+async function init() {
+    const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
+    try {
+        const res = await fetch(proxy + encodeURIComponent('https://api-prod.ilpost.it/podcast/v1/podcast/?pg=1&hits=100'));
         const json = await res.json();
-        if (json.data && json.data.length > 0) {
-            currentEpisodeList = [...currentEpisodeList, ...json.data];
-            renderEpisodes(json.data, currentPodcast.image);
-            if (json.data.length >= HITS_PER_PAGE) appendLoadMoreButton();
-        } else { btn.remove(); }
+        allPodcasts = (json.data || []).sort((a, b) => a.title.localeCompare(b.title));
+        renderPodcasts(allPodcasts);
+        loadNewEpisodes();
+        renderResumeSection();
+    } catch (e) { console.error('Errore fetch', e); }
+}
+
+// ── Preferiti ─────────────────────────────────────────────────
+let favorites = JSON.parse(localStorage.getItem('podcast_favorites') || '[]');
+function saveFavorites() { localStorage.setItem('podcast_favorites', JSON.stringify(favorites)); }
+function isFavorite(id) { return favorites.includes(id); }
+function toggleFavorite(e, p) {
+    e.stopPropagation();
+    favorites = isFavorite(p.id) ? favorites.filter(f => f !== p.id) : [...favorites, p.id];
+    saveFavorites();
+    renderPodcasts(allPodcasts.filter(pod =>
+        pod.title.toLowerCase().includes(searchInput.value.toLowerCase().trim()) ||
+        pod.author.toLowerCase().includes(searchInput.value.toLowerCase().trim())
+    ));
+    loadNewEpisodes();
+    renderResumeSection();
+}
+
+function buildCard(p) {
+    const el = document.createElement('div');
+    el.className = isFavorite(p.id) ? 'card is-favorite' : 'card';
+    const starSvg = isFavorite(p.id)
+        ? `<svg width="26" height="26" viewBox="0 0 24 24" fill="#f5c518" stroke="#d4a010" stroke-width="1.2" stroke-linejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>`
+        : `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.8" stroke-linejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>`;
+    el.innerHTML = `<img src="${p.image}" loading="lazy"><button class="star-btn">${starSvg}</button><div class="card-name">${decodeHTML(p.title)}</div>`;
+    el.onclick = () => openPodcast(p);
+    el.querySelector('.star-btn').onclick = (e) => toggleFavorite(e, p);
+    return el;
+}
+
+
+function buildListItem(p) {
+    const el = document.createElement('div');
+    el.className = isFavorite(p.id) ? 'pod-list-item is-favorite' : 'pod-list-item';
+    const starSvg = isFavorite(p.id)
+        ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="#f5c518" stroke="#d4a010" stroke-width="1.2" stroke-linejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>`
+        : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>`;
+    const desc = p.description || p.summary || p.abstract || '';
+    const thumb = document.createElement('img');
+    thumb.src = p.image; thumb.loading = 'lazy'; thumb.alt = p.title;
+    const info = document.createElement('div');
+    info.className = 'pod-list-info';
+    info.innerHTML = `<div class="pod-list-title">${decodeHTML(p.title)}</div><div class="pod-list-author">di ${decodeHTML(p.author)}</div>${desc ? `<div class="pod-list-desc">${decodeHTML(stripHTML(desc))}</div>` : ''}`;
+    const starBtn = document.createElement('button');
+    starBtn.className = 'pod-list-star'; starBtn.innerHTML = starSvg;
+    starBtn.onclick = (e) => toggleFavorite(e, p);
+    el.appendChild(thumb); el.appendChild(info); el.appendChild(starBtn);
+    el.onclick = () => openPodcast(p);
+    return el;
+}
+function renderPodcasts(list) {
+    grid.innerHTML = '';
+    const favs = list.filter(p => isFavorite(p.id));
+    const others = list.filter(p => !isFavorite(p.id));
+    const builder = currentViewMode === 'list' ? buildListItem : buildCard;
+    if (currentViewMode === 'list') grid.classList.add('list-mode');
+    else grid.classList.remove('list-mode');
+    [...favs, ...others].forEach(p => grid.appendChild(builder(p)));
+    const emptyState = document.getElementById('empty-state');
+    const searchQuery = searchInput.value.trim();
+    if (list.length === 0 && searchQuery) {
+        document.getElementById('es-query-text').textContent = '"' + searchQuery + '"';
+        emptyState.classList.add('visible');
+    } else {
+        emptyState.classList.remove('visible');
     }
+}
 
-    function appendLoadMoreButton() {
-        const container = document.getElementById('ep-items');
-        const btn = document.createElement('button');
-        btn.id = 'load-more-btn'; btn.textContent = 'Carica altri episodi';
-        btn.onclick = loadMoreEpisodes;
-        container.appendChild(btn);
+// ── Sezione "Da finire" ───────────────────────────────────────
+function renderResumeSection() {
+    const section = document.getElementById('resume-section');
+    const list = document.getElementById('resume-list');
+    list.innerHTML = '';
+    const candidates = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key.startsWith('last_ep_')) continue;
+        const podcastId = key.replace('last_ep_', '');
+        const ep = loadLastEpisode(podcastId);
+        if (!ep) continue;
+        const saved = loadProgress(podcastId, ep.id);
+        const duration = ep.duration || 0;
+        const ratio = duration > 0 ? saved / duration : 0;
+        if (saved > 5 && ratio < 0.95) candidates.push({ ep, podcastId, saved, duration, ratio });
     }
+    if (candidates.length === 0) { section.style.display = 'none'; return; }
 
-    async function openPodcast(p) {
-        currentPodcast = p; currentPage = 1;
-        viewGrid.style.display = 'none'; viewDetail.style.display = 'block';
-        backBtn.style.display = 'block'; searchInput.style.display = 'none';
-        document.getElementById('pd-img').src = p.image;
-        document.getElementById('pd-title').textContent = decodeHTML(p.title);
-        document.getElementById('pd-author').textContent = 'di ' + decodeHTML(p.author);
-        const container = document.getElementById('ep-items');
-        container.innerHTML = '';
-        const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
-        const res = await fetch(proxy + encodeURIComponent(`https://api-prod.ilpost.it/podcast/v1/podcast/${p.id}/?pg=1&hits=${HITS_PER_PAGE}`));
-        const json = await res.json();
-        currentEpisodeList = json.data;
-        renderEpisodes(json.data, p.image);
-        if (json.data.length >= HITS_PER_PAGE) appendLoadMoreButton();
-    }
+    candidates.slice(0, 3).forEach(({ ep, podcastId, saved, duration, ratio }) => {
+        const podcast = allPodcasts.find(p => String(p.id) === String(podcastId));
+        const card = document.createElement('div');
+        card.className = 'resume-card';
+        const pct = (ratio * 100).toFixed(0);
+        const remaining = duration > 0 ? Math.round((duration - saved) / 60) : null;
 
-    let currentHls = null;
-    const speeds = [1, 1.5, 2, 0.75];
-    let speedIndex = 0;
+        const thumbWrap = document.createElement('div');
+        thumbWrap.style.cssText = 'position:relative;width:64px;height:64px;flex-shrink:0;cursor:pointer;';
+        const thumb = document.createElement('img');
+        thumb.src = ep.image || (podcast ? podcast.image : '');
+        thumb.style.cssText = 'width:64px;height:64px;border-radius:10px;object-fit:cover;display:block;transition:opacity 0.2s;';
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:absolute;inset:0;border-radius:10px;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;pointer-events:none;cursor:pointer;';
+        overlay.innerHTML = `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/></svg>`;
 
-    function setSpeed(rate) {
-        audio.playbackRate = rate;
-        const label = rate === 1 ? '1x' : rate + 'x';
-        document.getElementById('speed-btn').textContent = label;
-        document.getElementById('exp-speed-btn').textContent = label;
-    }
-
-    document.getElementById('speed-btn').addEventListener('click', () => {
-        speedIndex = (speedIndex + 1) % speeds.length;
-        setSpeed(speeds[speedIndex]);
-    });
-    document.getElementById('exp-speed-btn').addEventListener('click', () => {
-        speedIndex = (speedIndex + 1) % speeds.length;
-        setSpeed(speeds[speedIndex]);
-    });
-
-    function play(url, title, author, image) {
-        if (currentHls) { currentHls.destroy(); currentHls = null; }
-        const isHLS = url && (url.endsWith('.m3u8') || url.includes('.m3u8'));
-        if (isHLS && typeof Hls !== 'undefined' && Hls.isSupported()) {
-            currentHls = new Hls();
-            currentHls.loadSource(url);
-            currentHls.attachMedia(audio);
-            currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
-                audio.play();
-                audio.playbackRate = speeds[speedIndex];
-            });
-        } else {
-            audio.src = url;
-            audio.play();
-        }
-        audio.addEventListener('loadedmetadata', function onMeta() {
-            audio.removeEventListener('loadedmetadata', onMeta);
-            audio.playbackRate = speeds[speedIndex];
-        });
-        document.getElementById('p-title').textContent = decodeHTML(title);
-        document.getElementById('p-pod').textContent = author;
-        document.getElementById('p-thumb').src = image;
-        playerBar.classList.add('visible');
-        document.querySelector('main').style.paddingBottom = '220px';
-        document.getElementById('play-svg').style.display = 'none';
-        document.getElementById('pause-svg').style.display = '';
-        setupMediaSession(title, author, image);
-    }
-
-    backBtn.onclick = () => {
-        viewDetail.style.display = 'none'; viewGrid.style.display = 'block';
-        backBtn.style.display = 'none'; searchInput.style.display = '';
-    };
-
-    document.getElementById('pp-bar').onclick = () => {
-        if (audio.paused) {
-            audio.play();
-            document.getElementById('play-svg').style.display = 'none';
-            document.getElementById('pause-svg').style.display = '';
-        } else {
-            audio.pause();
-            document.getElementById('play-svg').style.display = '';
-            document.getElementById('pause-svg').style.display = 'none';
-        }
-    };
-
-    audio.onended = () => {
-        if (currentEpisodeIndex < currentEpisodeList.length - 1) {
-            playEpisodeAtIndex(currentEpisodeIndex + 1);
-        } else {
-            document.getElementById('play-svg').style.display = '';
-            document.getElementById('pause-svg').style.display = 'none';
-        }
-    };
-
-    document.getElementById('prev-ep-btn').addEventListener('click', () => { playEpisodeAtIndex(currentEpisodeIndex - 1); });
-    document.getElementById('next-ep-btn').addEventListener('click', () => { playEpisodeAtIndex(currentEpisodeIndex + 1); });
-
-    function formatTime(s) {
-        if (isNaN(s) || !isFinite(s)) return '0:00';
-        const m = Math.floor(s / 60);
-        const sec = Math.floor(s % 60);
-        return m + ':' + (sec < 10 ? '0' : '') + sec;
-    }
-
-    audio.ontimeupdate = () => {
-        if (audio.duration) {
-            const pct = (audio.currentTime / audio.duration * 100) + '%';
-            document.getElementById('prog-fill').style.width = pct;
-            document.getElementById('exp-prog-fill').style.width = pct;
-            document.getElementById('time-current').textContent = formatTime(audio.currentTime);
-            document.getElementById('exp-time-current').textContent = formatTime(audio.currentTime);
-        }
-    };
-
-    audio.onloadedmetadata = () => {
-        document.getElementById('time-total').textContent = formatTime(audio.duration);
-        document.getElementById('exp-time-total').textContent = formatTime(audio.duration);
-    };
-
-    (function() {
-        const bar = document.getElementById('prog-bar');
-        let dragging = false;
-        function seek(clientX) {
-            if (!audio.duration) return;
-            const rect = bar.getBoundingClientRect();
-            const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-            audio.currentTime = ratio * audio.duration;
-            document.getElementById('prog-fill').style.width = (ratio * 100) + '%';
-            document.getElementById('time-current').textContent = formatTime(audio.currentTime);
-        }
-        bar.addEventListener('mousedown', (e) => { dragging = true; seek(e.clientX); });
-        document.addEventListener('mousemove', (e) => { if (dragging) seek(e.clientX); });
-        document.addEventListener('mouseup', () => { dragging = false; });
-        bar.addEventListener('touchstart', (e) => { dragging = true; seek(e.touches[0].clientX); e.preventDefault(); }, { passive: false });
-        document.addEventListener('touchmove', (e) => { if (dragging) { seek(e.touches[0].clientX); e.preventDefault(); } }, { passive: false });
-        document.addEventListener('touchend', () => { dragging = false; });
-    })();
-
-    (function() {
-        const bar = document.getElementById('exp-prog-bar');
-        let dragging = false;
-        function seek(clientX) {
-            if (!audio.duration) return;
-            const rect = bar.getBoundingClientRect();
-            const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-            audio.currentTime = ratio * audio.duration;
-            document.getElementById('exp-prog-fill').style.width = (ratio * 100) + '%';
-            document.getElementById('exp-time-current').textContent = formatTime(audio.currentTime);
-        }
-        bar.addEventListener('mousedown', (e) => { dragging = true; seek(e.clientX); });
-        document.addEventListener('mousemove', (e) => { if (dragging) seek(e.clientX); });
-        document.addEventListener('mouseup', () => { dragging = false; });
-        bar.addEventListener('touchstart', (e) => { dragging = true; seek(e.touches[0].clientX); e.preventDefault(); }, { passive: false });
-        document.addEventListener('touchmove', (e) => { if (dragging) { seek(e.touches[0].clientX); e.preventDefault(); } }, { passive: false });
-        document.addEventListener('touchend', () => { dragging = false; });
-    })();
-
-    document.getElementById('skip-back-btn').addEventListener('click', () => { audio.currentTime = Math.max(0, audio.currentTime - 10); });
-    document.getElementById('skip-fwd-btn').addEventListener('click', () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); });
-
-    const playerExpanded = document.getElementById('player-expanded');
-    function openExpanded() { playerExpanded.classList.add('visible'); document.body.style.overflow = 'hidden'; }
-    function closeExpanded() { playerExpanded.classList.remove('visible'); document.body.style.overflow = ''; }
-
-    function syncExpanded() {
-        document.getElementById('exp-cover-img').src = document.getElementById('p-thumb').src;
-        document.getElementById('exp-podcast-name').textContent = document.getElementById('p-pod').textContent;
-        document.getElementById('exp-title').textContent = document.getElementById('p-title').textContent;
-        document.getElementById('exp-author').textContent = document.getElementById('p-pod').textContent;
-        syncExpandedPlayState();
-    }
-
-    function syncExpandedPlayState() {
-        const playing = !audio.paused;
-        document.getElementById('exp-play-svg').style.display = playing ? 'none' : '';
-        document.getElementById('exp-pause-svg').style.display = playing ? '' : 'none';
-        document.getElementById('play-svg').style.display = playing ? 'none' : '';
-        document.getElementById('pause-svg').style.display = playing ? '' : 'none';
-    }
-
-    document.getElementById('p-thumb').addEventListener('click', () => { syncExpanded(); openExpanded(); });
-    document.getElementById('exp-close-btn').addEventListener('click', closeExpanded);
-
-    document.getElementById('exp-pp-btn').addEventListener('click', () => {
-        if (audio.paused) { audio.play(); } else { audio.pause(); }
-        syncExpandedPlayState();
-    });
-
-    audio.addEventListener('play', syncExpandedPlayState);
-    audio.addEventListener('pause', syncExpandedPlayState);
-
-    document.getElementById('exp-skip-back-btn').addEventListener('click', () => { audio.currentTime = Math.max(0, audio.currentTime - 10); });
-    document.getElementById('exp-skip-fwd-btn').addEventListener('click', () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); });
-    document.getElementById('exp-prev-btn').addEventListener('click', () => { playEpisodeAtIndex(currentEpisodeIndex - 1); });
-    document.getElementById('exp-next-btn').addEventListener('click', () => { playEpisodeAtIndex(currentEpisodeIndex + 1); });
-
-    // Swipe sinistra per chiudere il mini-player
-    (function() {
-        const player = document.getElementById('player');
-        let startX = null, startY = null;
-        player.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        }, { passive: true });
-        player.addEventListener('touchend', (e) => {
-            if (startX === null) return;
-            const dx = e.changedTouches[0].clientX - startX;
-            const dy = Math.abs(e.changedTouches[0].clientY - startY);
-            if (dx < -60 && dy < 40) {
-                audio.pause();
-                audio.src = '';
-                if (currentHls) { currentHls.destroy(); currentHls = null; }
-                player.classList.remove('visible');
-                document.querySelector('main').style.paddingBottom = '160px';
-                document.getElementById('play-svg').style.display = '';
-                document.getElementById('pause-svg').style.display = 'none';
-                speedIndex = 0;
-                setSpeed(1);
+        let overlayVisible = false, overlayTimer = null;
+        thumbWrap.addEventListener('click', (e) => {
+            e.stopPropagation();
+            overlayVisible = !overlayVisible;
+            overlay.style.opacity = overlayVisible ? '1' : '0';
+            overlay.style.pointerEvents = overlayVisible ? 'auto' : 'none';
+            thumb.style.opacity = overlayVisible ? '0.5' : '1';
+            clearTimeout(overlayTimer);
+            if (overlayVisible) {
+                overlayTimer = setTimeout(() => {
+                    overlayVisible = false;
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                    thumb.style.opacity = '1';
+                }, 2000);
             }
-            startX = null; startY = null;
-        }, { passive: true });
-    })();
+        });
+        overlay.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearTimeout(overlayTimer);
+            localStorage.removeItem(`last_ep_${podcastId}`);
+            card.style.transition = 'opacity 0.3s, transform 0.3s';
+            card.style.opacity = '0'; card.style.transform = 'translateX(-16px)';
+            setTimeout(() => renderResumeSection(), 320);
+        });
+        thumbWrap.appendChild(thumb);
+        thumbWrap.appendChild(overlay);
 
-    init();
+        const info = document.createElement('div');
+        info.className = 'resume-info';
+        info.innerHTML = `<div class="resume-title">${decodeHTML(ep.title)}</div><div class="resume-meta">${remaining ? remaining + ' min rimanenti' : formatDate(ep.timestamp)}</div>`;
+
+        const playBtn = makePlayBtn(async () => {
+            if (podcast && (!currentPodcast || currentPodcast.id !== podcast.id)) {
+                currentPodcast = podcast; currentPage = 1;
+                const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
+                const res = await fetch(proxy + encodeURIComponent(`https://api-prod.ilpost.it/podcast/v1/podcast/${podcast.id}/?pg=1&hits=${HITS_PER_PAGE}`));
+                const json = await res.json();
+                currentEpisodeList = json.data || [];
+            }
+            currentEpisodeIndex = currentEpisodeList.findIndex(e => String(e.id) === String(ep.id));
+            if (currentEpisodeIndex === -1) { currentEpisodeList = [ep]; currentEpisodeIndex = 0; }
+            play(ep.episode_raw_url, ep.title, ep.author || (podcast ? podcast.author : ''), ep.image || (podcast ? podcast.image : ''));
+            updatePrevNextButtons();
+        });
+
+        const progressBar = document.createElement('div');
+        progressBar.className = 'resume-progress-bar';
+        progressBar.innerHTML = `<div class="resume-progress-fill" style="width:${pct}%"></div>`;
+
+        card.appendChild(thumbWrap);
+        card.appendChild(info);
+        card.appendChild(playBtn);
+        card.appendChild(progressBar);
+        card.onclick = () => playBtn.click();
+        list.appendChild(card);
+    });
+    section.style.display = 'block';
+}
+
+// ── Nuovi episodi ─────────────────────────────────────────────
+async function loadNewEpisodes() {
+    const section = document.getElementById('new-episodes-section');
+    const list = document.getElementById('new-episodes-list');
+    const favPodcasts = allPodcasts.filter(p => isFavorite(p.id));
+    if (favPodcasts.length === 0) { section.style.display = 'none'; return; }
+    const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
+    const results = await Promise.all(favPodcasts.map(p =>
+        fetch(proxy + encodeURIComponent(`https://api-prod.ilpost.it/podcast/v1/podcast/${p.id}/?pg=1&hits=1`))
+            .then(r => r.json())
+            .then(json => json.data && json.data[0] ? { ep: json.data[0], podcast: p } : null)
+            .catch(() => null)
+    ));
+    const episodes = results.filter(Boolean).sort((a, b) => b.ep.timestamp - a.ep.timestamp).slice(0, 5);
+    list.innerHTML = '';
+    episodes.forEach(({ ep, podcast }) => {
+        const item = document.createElement('div');
+        item.className = 'new-ep-item';
+
+        const thumb = document.createElement('img');
+        thumb.className = 'new-ep-thumb';
+        thumb.src = ep.image || podcast.image;
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'new-ep-info';
+        infoDiv.innerHTML = `<div class="new-ep-title">${decodeHTML(ep.title)}</div><div class="new-ep-meta">${formatDate(ep.timestamp)}${ep.duration ? ' · ' + formatDuration(ep.duration) : ''}</div>`;
+
+        const playBtn = makePlayBtn(async () => {
+            if (!currentPodcast || currentPodcast.id !== podcast.id) {
+                currentPodcast = podcast; currentPage = 1;
+                const res = await fetch(proxy + encodeURIComponent(`https://api-prod.ilpost.it/podcast/v1/podcast/${podcast.id}/?pg=1&hits=${HITS_PER_PAGE}`));
+                const json = await res.json();
+                currentEpisodeList = json.data || [];
+            }
+            currentEpisodeIndex = currentEpisodeList.findIndex(e => e.id === ep.id);
+            if (currentEpisodeIndex === -1) currentEpisodeIndex = 0;
+            play(ep.episode_raw_url, ep.title, ep.author || podcast.author, ep.image || podcast.image);
+            updatePrevNextButtons();
+        });
+
+        item.appendChild(thumb);
+        item.appendChild(infoDiv);
+        item.appendChild(playBtn);
+        item.onclick = () => playBtn.click();
+        list.appendChild(item);
+    });
+    section.style.display = episodes.length > 0 ? 'block' : 'none';
+}
+
+// ── Podcast detail ────────────────────────────────────────────
+searchInput.oninput = (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    renderPodcasts(allPodcasts.filter(p => p.title.toLowerCase().includes(q) || p.author.toLowerCase().includes(q)));
+};
+
+let currentPodcast = null, currentPage = 1;
+const HITS_PER_PAGE = 20;
+let currentEpisodeList = [], currentEpisodeIndex = -1;
+
+function playEpisodeAtIndex(index) {
+    if (index < 0 || index >= currentEpisodeList.length) return;
+    currentEpisodeIndex = index;
+    playingFromQueue = false;
+    const ep = currentEpisodeList[index];
+    play(ep.episode_raw_url, ep.title, ep.author || currentPodcast.author, ep.image || currentPodcast.image);
+    updatePrevNextButtons();
+}
+function updatePrevNextButtons() {
+    document.getElementById('prev-ep-btn').style.opacity = currentEpisodeIndex > 0 ? '1' : '0.3';
+    document.getElementById('next-ep-btn').style.opacity = currentEpisodeIndex < currentEpisodeList.length - 1 ? '1' : '0.3';
+}
+
+function renderEpisodes(episodes, podcastImage) {
+    const container = document.getElementById('ep-items');
+    const existingBtn = document.getElementById('load-more-btn');
+    if (existingBtn) existingBtn.remove();
+
+    episodes.forEach((ep, epIndex) => {
+        const item = document.createElement('div');
+        const epRatio = getProgressRatio(currentPodcast?.id, ep.id, ep.duration);
+        item.className = epRatio >= 0.95 ? 'ep-item listened' : 'ep-item';
+
+        const thumb = document.createElement('img');
+        thumb.className = 'ep-thumb';
+        thumb.src = ep.image || podcastImage;
+
+        const info = document.createElement('div');
+        info.className = 'ep-info';
+        const listenedBadge = epRatio >= 0.95 ? '<div class="ep-listened-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Ascoltato</div>' : '';
+        info.innerHTML = `<div class="ep-title">${decodeHTML(ep.title)}</div><div class="ep-desc">${decodeHTML(ep.summary || stripHTML(ep.content_html || ''))}</div>${listenedBadge}`;
+
+        const playBtn = makePlayBtn(() => {
+            currentEpisodeIndex = epIndex;
+            play(ep.episode_raw_url, ep.title, ep.author || currentPodcast.author, ep.image || podcastImage);
+            updatePrevNextButtons();
+        });
+
+        const queueBtn = document.createElement('button');
+        queueBtn.className = isInQueue(ep.id) ? 'ep-queue-btn in-queue' : 'ep-queue-btn';
+        queueBtn.dataset.epId = ep.id;
+        queueBtn.title = isInQueue(ep.id) ? 'Rimuovi dalla coda' : 'Aggiungi alla coda';
+        queueBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="15" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/><line x1="18" y1="9" x2="18" y2="21"/><line x1="12" y1="15" x2="24" y2="15"/></svg>`;
+        queueBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            addToQueue(ep, currentPodcast ? decodeHTML(currentPodcast.title) : '', currentPodcast ? currentPodcast.image : '');
+            queueBtn.classList.toggle('in-queue', isInQueue(ep.id));
+        });
+        item.appendChild(thumb);
+        item.appendChild(info);
+        item.appendChild(queueBtn);
+        item.appendChild(playBtn);
+        item.onclick = () => playBtn.click();
+        container.appendChild(item);
+    });
+}
+
+async function loadMoreEpisodes() {
+    if (!currentPodcast) return;
+    const btn = document.getElementById('load-more-btn');
+    btn.textContent = 'Caricamento…'; btn.disabled = true;
+    currentPage++;
+    const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
+    const res = await fetch(proxy + encodeURIComponent(`https://api-prod.ilpost.it/podcast/v1/podcast/${currentPodcast.id}/?pg=${currentPage}&hits=${HITS_PER_PAGE}`));
+    const json = await res.json();
+    if (json.data && json.data.length > 0) {
+        currentEpisodeList = [...currentEpisodeList, ...json.data];
+        renderEpisodes(json.data, currentPodcast.image);
+        if (json.data.length >= HITS_PER_PAGE) appendLoadMoreButton();
+    } else { btn.remove(); }
+}
+function appendLoadMoreButton() {
+    const btn = document.createElement('button');
+    btn.id = 'load-more-btn'; btn.textContent = 'Carica altri episodi';
+    btn.onclick = loadMoreEpisodes;
+    document.getElementById('ep-items').appendChild(btn);
+}
+
+async function openPodcast(p) {
+    currentPodcast = p; currentPage = 1;
+    viewGrid.style.display = 'none'; viewDetail.style.display = 'block';
+    backBtn.style.display = 'block'; searchInput.style.display = 'none';
+    document.getElementById('pd-img').src = p.image;
+    document.getElementById('pd-title').textContent = decodeHTML(p.title);
+    document.getElementById('pd-author').textContent = 'di ' + decodeHTML(p.author);
+    document.getElementById('ep-items').innerHTML = '';
+    const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
+    const res = await fetch(proxy + encodeURIComponent(`https://api-prod.ilpost.it/podcast/v1/podcast/${p.id}/?pg=1&hits=${HITS_PER_PAGE}`));
+    const json = await res.json();
+    currentEpisodeList = json.data;
+    renderEpisodes(json.data, p.image);
+    if (json.data.length >= HITS_PER_PAGE) appendLoadMoreButton();
+}
+
+backBtn.onclick = () => {
+    viewDetail.style.display = 'none'; viewGrid.style.display = 'block';
+    backBtn.style.display = 'none'; searchInput.style.display = '';
+};
+
+// ── Player ────────────────────────────────────────────────────
+let currentHls = null;
+const speeds = [1, 1.5, 2, 0.75];
+let speedIndex = 0;
+
+function setSpeed(rate) {
+    audio.playbackRate = rate;
+    const label = rate === 1 ? '1x' : rate + 'x';
+    document.getElementById('speed-btn').textContent = label;
+    document.getElementById('exp-speed-btn').textContent = label;
+}
+document.getElementById('speed-btn').addEventListener('click', () => { speedIndex = (speedIndex + 1) % speeds.length; setSpeed(speeds[speedIndex]); });
+document.getElementById('exp-speed-btn').addEventListener('click', () => { speedIndex = (speedIndex + 1) % speeds.length; setSpeed(speeds[speedIndex]); });
+
+function updateEpisodeDescription() {
+    const ep = currentEpisodeList[currentEpisodeIndex];
+    if (ep) {
+        const raw = ep.content_html || ep.summary || '';
+        document.getElementById('exp-cover-back-text').textContent = raw ? stripHTML(raw) : 'Nessuna descrizione disponibile.';
+    }
+    document.getElementById('exp-cover-inner').classList.remove('flipped');
+}
+
+function play(url, title, author, image) {
+    if (currentHls) { currentHls.destroy(); currentHls = null; }
+    const isHLS = url && url.includes('.m3u8');
+    const podcastId = currentPodcast?.id;
+    const ep = currentEpisodeList[currentEpisodeIndex];
+    const episodeId = ep?.id;
+
+    if (ep && podcastId) saveLastEpisode(podcastId, ep);
+
+    if (isHLS && typeof Hls !== 'undefined' && Hls.isSupported()) {
+        currentHls = new Hls();
+        currentHls.loadSource(url);
+        currentHls.attachMedia(audio);
+        currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
+            const saved = loadProgress(podcastId, episodeId);
+            if (saved > 5) audio.currentTime = saved;
+            audio.play(); audio.playbackRate = speeds[speedIndex];
+        });
+    } else {
+        audio.src = url;
+        audio.addEventListener('loadedmetadata', function onSeek() {
+            audio.removeEventListener('loadedmetadata', onSeek);
+            const saved = loadProgress(podcastId, episodeId);
+            if (saved > 5) audio.currentTime = saved;
+            audio.play(); audio.playbackRate = speeds[speedIndex];
+        });
+    }
+
+    document.getElementById('p-title').textContent = decodeHTML(title);
+    document.getElementById('p-pod').textContent = author;
+    document.getElementById('p-thumb').src = image;
+    document.getElementById('exp-podcast-name').textContent = currentPodcast ? decodeHTML(currentPodcast.title) : author;
+    playerBar.classList.add('visible');
+    document.querySelector('main').style.paddingBottom = '220px';
+    document.getElementById('play-svg').style.display = 'none';
+    document.getElementById('pause-svg').style.display = '';
+    setupMediaSession(title, author, image);
+    updateEpisodeDescription();
+    renderResumeSection();
+}
+
+document.getElementById('pp-bar').onclick = () => { if (audio.paused) audio.play(); else audio.pause(); };
+audio.onended = () => {
+    const endedEp = currentEpisodeList[currentEpisodeIndex];
+    if (currentPodcast?.id && endedEp?.id && audio.duration) {
+        saveProgress(currentPodcast.id, endedEp.id, audio.duration);
+    }
+    // La coda ha sempre la precedenza
+    if (episodeQueue.length > 0) {
+        playFromQueue(0);
+    } else if (!playingFromQueue && currentEpisodeIndex < currentEpisodeList.length - 1) {
+        // Nessuna coda: continua la playlist del podcast corrente
+        playEpisodeAtIndex(currentEpisodeIndex + 1);
+    } else {
+        playingFromQueue = false;
+        document.getElementById('play-svg').style.display = '';
+        document.getElementById('pause-svg').style.display = 'none';
+    }
+    if (viewDetail.style.display !== 'none' && currentPodcast) {
+        const renderedIds = Array.from(document.querySelectorAll('#ep-items .ep-queue-btn')).length;
+        if (renderedIds > 0) renderEpisodes(currentEpisodeList.slice(0, renderedIds), currentPodcast.image);
+    }
+    renderResumeSection();
+};
+document.getElementById('prev-ep-btn').addEventListener('click', () => playEpisodeAtIndex(currentEpisodeIndex - 1));
+document.getElementById('next-ep-btn').addEventListener('click', () => playEpisodeAtIndex(currentEpisodeIndex + 1));
+
+audio.ontimeupdate = () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration * 100) + '%';
+    document.getElementById('prog-fill').style.width = pct;
+    document.getElementById('exp-prog-fill').style.width = pct;
+    document.getElementById('time-current').textContent = formatTime(audio.currentTime);
+    document.getElementById('exp-time-current').textContent = formatTime(audio.currentTime);
+    if (Math.round(audio.currentTime) % 5 === 0) {
+        saveProgress(currentPodcast?.id, currentEpisodeList[currentEpisodeIndex]?.id, audio.currentTime);
+    }
+};
+audio.onloadedmetadata = () => {
+    document.getElementById('time-total').textContent = formatTime(audio.duration);
+    document.getElementById('exp-time-total').textContent = formatTime(audio.duration);
+};
+
+// ── Seek bars ────────────────────────────────────────────────
+(function() {
+    const bar = document.getElementById('prog-bar');
+    let dragging = false;
+    function seek(x) {
+        if (!audio.duration) return;
+        const r = document.getElementById('prog-track').getBoundingClientRect();
+        audio.currentTime = Math.min(1, Math.max(0, (x - r.left) / r.width)) * audio.duration;
+    }
+    bar.addEventListener('mousedown', (e) => { dragging = true; seek(e.clientX); });
+    document.addEventListener('mousemove', (e) => { if (dragging) seek(e.clientX); });
+    document.addEventListener('mouseup', () => { dragging = false; });
+    bar.addEventListener('touchstart', (e) => { dragging = true; seek(e.touches[0].clientX); e.preventDefault(); }, { passive: false });
+    document.addEventListener('touchmove', (e) => { if (dragging) { seek(e.touches[0].clientX); e.preventDefault(); } }, { passive: false });
+    document.addEventListener('touchend', () => { dragging = false; });
+})();
+
+(function() {
+    const bar = document.getElementById('exp-prog-bar');
+    let dragging = false;
+    function seek(x) {
+        if (!audio.duration) return;
+        const r = document.getElementById('exp-prog-track').getBoundingClientRect();
+        audio.currentTime = Math.min(1, Math.max(0, (x - r.left) / r.width)) * audio.duration;
+    }
+    bar.addEventListener('mousedown', (e) => { dragging = true; seek(e.clientX); });
+    document.addEventListener('mousemove', (e) => { if (dragging) seek(e.clientX); });
+    document.addEventListener('mouseup', () => { dragging = false; });
+    bar.addEventListener('touchstart', (e) => { dragging = true; seek(e.touches[0].clientX); e.preventDefault(); }, { passive: false });
+    document.addEventListener('touchmove', (e) => { if (dragging) { seek(e.touches[0].clientX); e.preventDefault(); } }, { passive: false });
+    document.addEventListener('touchend', () => { dragging = false; });
+})();
+
+document.getElementById('skip-back-btn').addEventListener('click', () => { audio.currentTime = Math.max(0, audio.currentTime - 10); });
+document.getElementById('skip-fwd-btn').addEventListener('click', () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); });
+
+// ── Player espanso ────────────────────────────────────────────
+const playerExpanded = document.getElementById('player-expanded');
+function openExpanded() { playerExpanded.classList.add('visible'); document.body.style.overflow = 'hidden'; }
+function closeExpanded() { playerExpanded.classList.remove('visible'); document.body.style.overflow = ''; }
+function syncExpanded() {
+    document.getElementById('exp-cover-img').src = document.getElementById('p-thumb').src;
+    document.getElementById('exp-podcast-name').textContent = currentPodcast ? decodeHTML(currentPodcast.title) : document.getElementById('p-pod').textContent;
+    document.getElementById('exp-title').textContent = document.getElementById('p-title').textContent;
+    document.getElementById('exp-author').textContent = document.getElementById('p-pod').textContent;
+    document.getElementById('exp-cover-inner').classList.remove('flipped');
+    syncExpandedPlayState();
+}
+function syncExpandedPlayState() {
+    const playing = !audio.paused;
+    document.getElementById('exp-play-svg').style.display = playing ? 'none' : '';
+    document.getElementById('exp-pause-svg').style.display = playing ? '' : 'none';
+    document.getElementById('play-svg').style.display = playing ? 'none' : '';
+    document.getElementById('pause-svg').style.display = playing ? '' : 'none';
+}
+document.getElementById('p-thumb').addEventListener('click', () => { syncExpanded(); openExpanded(); });
+document.getElementById('exp-close-btn').addEventListener('click', closeExpanded);
+document.getElementById('exp-podcast-name').addEventListener('click', () => {
+    if (!currentPodcast) return;
+    closeExpanded();
+    setTimeout(async () => {
+        viewDetail.style.display = 'none';
+        viewGrid.style.display = 'block';
+        backBtn.style.display = 'none';
+        searchInput.style.display = '';
+        await openPodcast(currentPodcast);
+    }, 350);
+});
+document.getElementById('exp-pp-btn').addEventListener('click', () => { if (audio.paused) audio.play(); else audio.pause(); syncExpandedPlayState(); });
+audio.addEventListener('play', syncExpandedPlayState);
+audio.addEventListener('pause', syncExpandedPlayState);
+audio.addEventListener('pause', () => {
+    const ep = currentEpisodeList[currentEpisodeIndex];
+    if (currentPodcast?.id && ep?.id && audio.currentTime > 0) {
+        saveProgress(currentPodcast.id, ep.id, audio.currentTime);
+    }
+});
+document.getElementById('exp-skip-back-btn').addEventListener('click', () => { audio.currentTime = Math.max(0, audio.currentTime - 10); });
+document.getElementById('exp-skip-fwd-btn').addEventListener('click', () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); });
+document.getElementById('exp-prev-btn').addEventListener('click', () => playEpisodeAtIndex(currentEpisodeIndex - 1));
+document.getElementById('exp-next-btn').addEventListener('click', () => playEpisodeAtIndex(currentEpisodeIndex + 1));
+
+// ── Swipe sinistra chiude mini player ─────────────────────────
+(function() {
+    const player = document.getElementById('player');
+    let startX = null, startY = null;
+    player.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, { passive: true });
+    player.addEventListener('touchend', (e) => {
+        if (startX === null) return;
+        const dx = e.changedTouches[0].clientX - startX;
+        const dy = Math.abs(e.changedTouches[0].clientY - startY);
+        if (dx < -60 && dy < 40) {
+            audio.pause(); audio.src = '';
+            if (currentHls) { currentHls.destroy(); currentHls = null; }
+            player.classList.remove('visible');
+            document.querySelector('main').style.paddingBottom = '160px';
+            document.getElementById('play-svg').style.display = '';
+            document.getElementById('pause-svg').style.display = 'none';
+            speedIndex = 0; setSpeed(1);
+        }
+        startX = null; startY = null;
+    }, { passive: true });
+})();
+
+
+
+
+// ── Sistema Coda ──────────────────────────────────────────────
+let episodeQueue = [];
+let playingFromQueue = false;
+
+function updateQueueBadge() {
+    const badge = document.getElementById('queue-badge');
+    if (episodeQueue.length > 0) {
+        badge.textContent = episodeQueue.length > 9 ? '9+' : episodeQueue.length;
+        badge.classList.add('visible');
+    } else {
+        badge.classList.remove('visible');
+    }
+}
+
+function renderQueuePanel() {
+    const list = document.getElementById('queue-list');
+    const empty = document.getElementById('queue-empty');
+    Array.from(list.children).forEach(c => { if (c.id !== 'queue-empty') c.remove(); });
+    if (episodeQueue.length === 0) { empty.classList.add('visible'); return; }
+    empty.classList.remove('visible');
+    episodeQueue.forEach((item, idx) => {
+        const el = document.createElement('div');
+        el.className = 'queue-item';
+        el.dataset.idx = idx;
+
+        // Handle drag
+        const handle = document.createElement('div');
+        handle.className = 'queue-drag-handle';
+        handle.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg>`;
+
+        const thumb = document.createElement('img');
+        thumb.src = item.image; thumb.alt = item.title;
+        const info = document.createElement('div');
+        info.className = 'queue-item-info';
+        info.innerHTML = `<div class="queue-item-title">${decodeHTML(item.title)}</div><div class="queue-item-pod">${decodeHTML(item.podcastTitle || '')}</div>`;
+        const playBtn = document.createElement('button');
+        playBtn.className = 'queue-item-play';
+        playBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg>`;
+        playBtn.onclick = () => { playFromQueue(idx); closeQueuePanel(); };
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'queue-item-remove';
+        removeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+        removeBtn.onclick = () => { removeFromQueue(idx); };
+
+        el.appendChild(handle);
+        el.appendChild(thumb); el.appendChild(info); el.appendChild(playBtn); el.appendChild(removeBtn);
+        list.appendChild(el);
+
+        // ── Touch drag ─────────────────────────────────────────
+        setupQueueItemDrag(handle, el, list);
+    });
+}
+
+function setupQueueItemDrag(handle, el, list) {
+    let dragStartY = 0, dragFromIdx = -1, clone = null, scrollInterval = null;
+
+    handle.addEventListener('touchstart', (e) => {
+        e.stopPropagation();
+        const touch = e.touches[0];
+        dragStartY = touch.clientY;
+        dragFromIdx = parseInt(el.dataset.idx);
+
+        // Clone visivo che segue il dito
+        clone = el.cloneNode(true);
+        const rect = el.getBoundingClientRect();
+        clone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;background:var(--bg);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.22);opacity:0.96;pointer-events:none;transition:none;`;
+        document.body.appendChild(clone);
+        el.classList.add('dragging');
+    }, { passive: true });
+
+    handle.addEventListener('touchmove', (e) => {
+        if (!clone) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const dy = touch.clientY - dragStartY;
+        const rect0 = el.getBoundingClientRect();
+        clone.style.top = (rect0.top + dy - (el.offsetHeight / 2 - rect0.height / 2)) + 'px';
+
+        // Scroll automatico ai bordi
+        clearInterval(scrollInterval);
+        const qList = document.getElementById('queue-list');
+        const listRect = qList.getBoundingClientRect();
+        if (touch.clientY < listRect.top + 60) {
+            scrollInterval = setInterval(() => { qList.scrollTop -= 6; }, 16);
+        } else if (touch.clientY > listRect.bottom - 60) {
+            scrollInterval = setInterval(() => { qList.scrollTop += 6; }, 16);
+        }
+
+        // Evidenzia il target
+        document.querySelectorAll('.queue-item').forEach(item => item.classList.remove('drag-over'));
+        const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.queue-item');
+        if (target && target !== el) target.classList.add('drag-over');
+    }, { passive: false });
+
+    handle.addEventListener('touchend', (e) => {
+        clearInterval(scrollInterval);
+        if (!clone) return;
+        clone.remove(); clone = null;
+        el.classList.remove('dragging');
+
+        const touch = e.changedTouches[0];
+        document.querySelectorAll('.queue-item').forEach(item => item.classList.remove('drag-over'));
+        const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.queue-item');
+
+        if (target && target !== el) {
+            const toIdx = parseInt(target.dataset.idx);
+            if (!isNaN(dragFromIdx) && !isNaN(toIdx) && dragFromIdx !== toIdx) {
+                // Riordina array
+                const moved = episodeQueue.splice(dragFromIdx, 1)[0];
+                episodeQueue.splice(toIdx, 0, moved);
+                renderQueuePanel();
+            }
+        }
+        dragFromIdx = -1;
+    }, { passive: true });
+}
+
+function addToQueue(ep, podcastTitle, podcastImage) {
+    const alreadyIn = episodeQueue.findIndex(i => String(i.id) === String(ep.id));
+    if (alreadyIn !== -1) { removeFromQueue(alreadyIn); return false; }
+    episodeQueue.push({
+        id: ep.id,
+        title: ep.title,
+        url: ep.episode_raw_url,
+        image: ep.image || podcastImage || '',
+        author: ep.author || podcastTitle || '',
+        podcastTitle: podcastTitle || ep.author || '',
+        duration: ep.duration,
+    });
+    updateQueueBadge();
+    refreshQueueButtons();
+    return true;
+}
+
+function removeFromQueue(idx) {
+    episodeQueue.splice(idx, 1);
+    updateQueueBadge();
+    renderQueuePanel();
+    refreshQueueButtons();
+}
+
+function isInQueue(epId) {
+    return episodeQueue.some(i => String(i.id) === String(epId));
+}
+
+function refreshQueueButtons() {
+    document.querySelectorAll('.ep-queue-btn[data-ep-id]').forEach(btn => {
+        const inQ = isInQueue(btn.dataset.epId);
+        btn.classList.toggle('in-queue', inQ);
+        btn.title = inQ ? 'Rimuovi dalla coda' : 'Aggiungi alla coda';
+    });
+}
+
+function playFromQueue(idx) {
+    if (idx < 0 || idx >= episodeQueue.length) return;
+    const item = episodeQueue[idx];
+    // Rimuovi dalla coda e aggiorna UI
+    episodeQueue.splice(idx, 1);
+    updateQueueBadge();
+    renderQueuePanel();
+    refreshQueueButtons();
+    // Segna che stiamo riproducendo dalla coda (non dal podcast corrente)
+    // Non tocchiamo currentEpisodeList né currentEpisodeIndex:
+    // al termine di questo episodio, onended controllerà prima la coda.
+    playingFromQueue = true;
+    play(item.url, item.title, item.author, item.image);
+}
+
+// Intercetta onended per riprodurre prossimo dalla coda se la playlist normale è finita
+const _origOnEnded = audio.onended;
+
+function openQueuePanel() {
+    renderQueuePanel();
+    document.getElementById('queue-panel').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+}
+function closeQueuePanel() {
+    document.getElementById('queue-panel').classList.remove('visible');
+    document.body.style.overflow = '';
+}
+document.getElementById('queue-btn').addEventListener('click', openQueuePanel);
+document.getElementById('queue-close-btn').addEventListener('click', closeQueuePanel);
+document.getElementById('queue-clear-btn').addEventListener('click', () => {
+    episodeQueue = [];
+    updateQueueBadge();
+    renderQueuePanel();
+    refreshQueueButtons();
+});
+
+// ── Toggle vista ─────────────────────────────────────────────
+let currentViewMode = localStorage.getItem('podcast_view_mode') || 'grid';
+(function() {
+    const btnGrid = document.getElementById('btn-grid');
+    const btnList = document.getElementById('btn-list');
+    function applyMode(mode) {
+        currentViewMode = mode;
+        localStorage.setItem('podcast_view_mode', mode);
+        btnGrid.classList.toggle('active', mode === 'grid');
+        btnList.classList.toggle('active', mode === 'list');
+        renderPodcasts(allPodcasts.filter(p =>
+            p.title.toLowerCase().includes(searchInput.value.toLowerCase().trim()) ||
+            p.author.toLowerCase().includes(searchInput.value.toLowerCase().trim())
+        ));
+    }
+    btnGrid.addEventListener('click', () => applyMode('grid'));
+    btnList.addEventListener('click', () => applyMode('list'));
+    if (currentViewMode === 'list') { btnList.classList.add('active'); btnGrid.classList.remove('active'); }
+})();
+
+// ── Offline detection ─────────────────────────────────────────
+(function() {
+    const banner = document.getElementById('offline-banner');
+    function update() { if (!navigator.onLine) banner.classList.add('visible'); else banner.classList.remove('visible'); }
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    update();
+})();
+
+// ── Service Worker ────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+init();
 </script>
 </body>
 </html>
