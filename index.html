@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-180.png">
+    <link rel="manifest" href="/postcast/manifest.json">
+    <link rel="apple-touch-icon" href="/postcast/icon-180.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Il Post">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -274,7 +275,7 @@
         </div>
         <button id="speed-btn">1x</button>
         <button id="queue-btn" aria-label="Coda">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/><circle cx="18" cy="16" r="3" fill="currentColor" stroke="none"/><polyline points="18 13 18 19" stroke="currentColor"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             <span id="queue-badge"></span>
         </button>
     </div>
@@ -317,7 +318,7 @@
     </div>
     <div id="queue-list">
         <div id="queue-empty">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="21" x2="15" y2="12"/><line x1="3" y1="21" x2="9" y2="18"/></svg>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/></svg>
             <p>La coda è vuota.<br>Aggiungi episodi con il tasto <strong>+</strong>.</p>
         </div>
     </div>
@@ -762,11 +763,16 @@ function renderEpisodes(episodes, podcastImage) {
         queueBtn.className = isInQueue(ep.id) ? 'ep-queue-btn in-queue' : 'ep-queue-btn';
         queueBtn.dataset.epId = ep.id;
         queueBtn.title = isInQueue(ep.id) ? 'Rimuovi dalla coda' : 'Aggiungi alla coda';
-        queueBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="15" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/><line x1="18" y1="9" x2="18" y2="21"/><line x1="12" y1="15" x2="24" y2="15"/></svg>`;
+        const svgAdd = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="15" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/><line x1="18" y1="9" x2="18" y2="21"/><line x1="12" y1="15" x2="24" y2="15"/></svg>`;
+        const svgRemove = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="15" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/><line x1="12" y1="15" x2="24" y2="15"/></svg>`;
+        queueBtn.innerHTML = isInQueue(ep.id) ? svgRemove : svgAdd;
         queueBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             addToQueue(ep, currentPodcast ? decodeHTML(currentPodcast.title) : '', currentPodcast ? currentPodcast.image : '');
-            queueBtn.classList.toggle('in-queue', isInQueue(ep.id));
+            const inQ = isInQueue(ep.id);
+            queueBtn.classList.toggle('in-queue', inQ);
+            queueBtn.title = inQ ? 'Rimuovi dalla coda' : 'Aggiungi alla coda';
+            queueBtn.innerHTML = inQ ? svgRemove : svgAdd;
         });
         item.appendChild(thumb);
         item.appendChild(info);
@@ -1177,11 +1183,14 @@ function isInQueue(epId) {
     return episodeQueue.some(i => String(i.id) === String(epId));
 }
 
+const _svgAdd = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="15" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/><line x1="18" y1="9" x2="18" y2="21"/><line x1="12" y1="15" x2="24" y2="15"/></svg>`;
+const _svgRemove = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="15" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="9" y2="18"/><line x1="12" y1="15" x2="24" y2="15"/></svg>`;
 function refreshQueueButtons() {
     document.querySelectorAll('.ep-queue-btn[data-ep-id]').forEach(btn => {
         const inQ = isInQueue(btn.dataset.epId);
         btn.classList.toggle('in-queue', inQ);
         btn.title = inQ ? 'Rimuovi dalla coda' : 'Aggiungi alla coda';
+        btn.innerHTML = inQ ? _svgRemove : _svgAdd;
     });
 }
 
@@ -1252,7 +1261,7 @@ let currentViewMode = localStorage.getItem('podcast_view_mode') || 'grid';
 
 // ── Service Worker ────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.register('/postcast/sw.js').catch(() => {});
 }
 
 init();
