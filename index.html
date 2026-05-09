@@ -1252,7 +1252,7 @@ let currentViewMode = localStorage.getItem('podcast_view_mode') || 'grid';
 
 // ── Service Worker ────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/postcast/sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
 init();
