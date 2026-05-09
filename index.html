@@ -14,14 +14,14 @@
         :root {
             --bg: #ffffff; --surface: #f2f2f2; --surface2: #e8e8e8;
             --text: #111111; --muted: #666; --accent: #111111;
-            --border: rgba(0,0,0,0.08); --header-bg: rgba(255,255,255,0.95);
+            --border: rgba(0,0,0,0.08); --header-bg: rgba(255,255,255,0.98);
             --radius: 12px; --safe-bottom: env(safe-area-inset-bottom);
         }
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg: #0d0d0d; --surface: #1c1c1e; --surface2: #2c2c2e;
                 --text: #f0f0f0; --muted: #8e8e93; --accent: #ffffff;
-                --border: rgba(255,255,255,0.08); --header-bg: rgba(13,13,13,0.95);
+                --border: rgba(255,255,255,0.08); --header-bg: rgba(13,13,13,0.98);
             }
         }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -49,11 +49,12 @@
         .card-name { font-size: 13px; font-weight: 700; margin-top: 6px; line-height: 1.3; color: var(--text); }
         .card.is-favorite img { outline: 4px solid #f5c518; outline-offset: -2px; border-radius: var(--radius); }
 
-        .ep-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-        .ep-thumb { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: var(--surface); }
+        .ep-item { display: flex; align-items: flex-start; gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--border); }
+        .ep-thumb { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: var(--surface); }
         .ep-info { flex: 1; min-width: 0; }
-        .ep-title { font-size: 14px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; color: var(--text); }
-        .ep-desc { font-size: 12px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .ep-title { font-size: 14px; font-weight: 700; line-height: 1.35; margin-bottom: 5px; color: var(--text); }
+        .ep-desc { font-size: 12px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5; margin-bottom: 5px; }
+        .ep-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
         .ep-play-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); border: none; color: var(--bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.1s; }
         .ep-play-btn:active { transform: scale(0.92); }
@@ -73,7 +74,7 @@
         #player-timeline { display: flex; flex-direction: column; gap: 4px; }
         #prog-bar { width: 100%; height: 20px; background: transparent; cursor: pointer; position: relative; display: flex; align-items: center; touch-action: none; }
         #prog-track { position: absolute; left: 0; right: 0; height: 6px; background: rgba(255,255,255,0.2); border-radius: 6px; }
-        #prog-fill { height: 100%; background: #e94560; width: 0%; border-radius: 6px; pointer-events: none; position: relative; transition: width 0.1s linear; }
+        #prog-fill { height: 100%; background: #13C8E1; width: 0%; border-radius: 6px; pointer-events: none; position: relative; transition: width 0.1s linear; }
         #prog-thumb { position: absolute; right: -9px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; border-radius: 50%; background: #ffffff; pointer-events: none; box-shadow: 0 0 6px rgba(0,0,0,0.4); }
         #time-row { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.45); padding: 0 2px; }
 
@@ -100,7 +101,7 @@
         #exp-timeline { width: 100%; }
         #exp-prog-bar { width: 100%; height: 24px; background: transparent; cursor: pointer; position: relative; display: flex; align-items: center; touch-action: none; }
         #exp-prog-track { position: absolute; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.2); border-radius: 4px; }
-        #exp-prog-fill { height: 100%; background: #e94560; width: 0%; border-radius: 4px; pointer-events: none; position: relative; transition: width 0.1s linear; }
+        #exp-prog-fill { height: 100%; background: #13C8E1; width: 0%; border-radius: 4px; pointer-events: none; position: relative; transition: width 0.1s linear; }
         #exp-prog-thumb { position: absolute; right: -8px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 50%; background: #fff; pointer-events: none; box-shadow: 0 0 6px rgba(0,0,0,0.4); }
         #exp-time-row { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 6px; }
         #exp-controls { display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; }
@@ -139,6 +140,15 @@
 
 
 
+
+        /* ── Barra progresso episodio ───────────────────────────── */
+        .ep-thumb-wrap { position: relative; width: 80px; height: 80px; flex-shrink: 0; border-radius: 10px; overflow: hidden; }
+        .ep-thumb-wrap .ep-thumb { width: 100%; height: 100%; display: block; flex-shrink: 0; }
+        .ep-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: rgba(0,0,0,0.18); }
+        @media (prefers-color-scheme: dark) { .ep-progress-bar { background: rgba(255,255,255,0.15); } }
+        .ep-progress-fill { height: 100%; background: #13C8E1; transition: width 0.3s ease; }
+        /* barra nascosta per episodi ascoltati */
+        .ep-item.listened .ep-progress-bar { display: none; }
         /* ── Banner offline ─────────────────────────────────────── */
         #offline-banner { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #ff9500; color: #fff; text-align: center; font-size: 13px; font-weight: 700; padding: 10px 16px; animation: slideDown 0.3s ease; }
         #offline-banner.visible { display: block; }
@@ -146,7 +156,7 @@
         /* ── Episodio già ascoltato ─────────────────────────────── */
         .ep-item.listened { opacity: 0.52; }
         .ep-item.listened .ep-title { color: var(--muted); }
-        .ep-listened-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: #4cd964; margin-top: 3px; }
+        .ep-listened-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: #13C8E1; margin-top: 3px; }
 
 
         /* ── Coda episodi ────────────────────────────────────────── */
@@ -176,9 +186,9 @@
         .queue-item-remove { background: none; border: none; color: var(--muted); padding: 6px; cursor: pointer; flex-shrink: 0; }
         .queue-item-remove:active { color: #e94560; }
 
-        .ep-queue-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s; }
-        .ep-queue-btn:active { background: var(--accent); color: var(--bg); }
-        .ep-queue-btn.in-queue { background: var(--accent); color: var(--bg); }
+        .ep-queue-btn { width: 32px; height: 32px; border-radius: 50%; background: transparent; border: none; color: var(--muted); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: color 0.15s; }
+        .ep-queue-btn:active { color: #13C8E1; }
+        .ep-queue-btn.in-queue { color: #13C8E1; }
 
         /* ── Drag & drop coda ───────────────────────────────────── */
         .queue-item { touch-action: none; user-select: none; transition: background 0.15s, box-shadow 0.15s, opacity 0.15s; border-radius: 10px; margin: 2px -8px; padding: 12px 8px; }
@@ -459,6 +469,15 @@ function saveLastEpisode(podcastId, epData) {
 function loadLastEpisode(podcastId) {
     try { return JSON.parse(localStorage.getItem(`last_ep_${podcastId}`) || 'null'); } catch { return null; }
 }
+
+// ── Durata episodio (l'API usa "milliseconds", non "duration") ─
+function epDurationSec(ep) {
+    if (ep.milliseconds) return ep.milliseconds / 1000;
+    if (epDurationSec(ep)) return epDurationSec(ep); // fallback per dati da localStorage
+    if (ep.minutes) return ep.minutes * 60;
+    return 0;
+}
+
 function getProgressRatio(podcastId, episodeId, duration) {
     if (!duration) return 0;
     return Math.min(loadProgress(podcastId, episodeId) / duration, 1);
@@ -580,9 +599,9 @@ function renderResumeSection() {
         const ep = loadLastEpisode(podcastId);
         if (!ep) continue;
         const saved = loadProgress(podcastId, ep.id);
-        const duration = ep.duration || 0;
+        const duration = epDurationSec(ep) || 0;
         const ratio = duration > 0 ? saved / duration : 0;
-        if (saved > 5 && ratio < 0.95) candidates.push({ ep, podcastId, saved, duration, ratio });
+        if (saved > 5 && ratio < 0.98) candidates.push({ ep, podcastId, saved, duration, ratio });
     }
     if (candidates.length === 0) { section.style.display = 'none'; return; }
 
@@ -675,7 +694,15 @@ async function loadNewEpisodes() {
             .then(json => json.data && json.data[0] ? { ep: json.data[0], podcast: p } : null)
             .catch(() => null)
     ));
-    const episodes = results.filter(Boolean).sort((a, b) => b.ep.timestamp - a.ep.timestamp).slice(0, 5);
+    const episodes = results
+        .filter(Boolean)
+        .filter(({ ep, podcast }) => {
+            const dur = epDurationSec(ep);
+            const ratio = dur > 0 ? loadProgress(podcast.id, ep.id) / dur : 0;
+            return ratio < 0.98; // nascondi episodi già ascoltati
+        })
+        .sort((a, b) => b.ep.timestamp - a.ep.timestamp)
+        .slice(0, 5);
     list.innerHTML = '';
     episodes.forEach(({ ep, podcast }) => {
         const item = document.createElement('div');
@@ -687,7 +714,7 @@ async function loadNewEpisodes() {
 
         const infoDiv = document.createElement('div');
         infoDiv.className = 'new-ep-info';
-        infoDiv.innerHTML = `<div class="new-ep-title">${decodeHTML(ep.title)}</div><div class="new-ep-meta">${formatDate(ep.timestamp)}${ep.duration ? ' · ' + formatDuration(ep.duration) : ''}</div>`;
+        infoDiv.innerHTML = `<div class="new-ep-title">${decodeHTML(ep.title)}</div><div class="new-ep-meta">${formatDate(ep.timestamp)}${epDurationSec(ep) ? ' · ' + formatDuration(epDurationSec(ep)) : ''}</div>`;
 
         const playBtn = makePlayBtn(async () => {
             if (!currentPodcast || currentPodcast.id !== podcast.id) {
@@ -741,17 +768,32 @@ function renderEpisodes(episodes, podcastImage) {
 
     episodes.forEach((ep, epIndex) => {
         const item = document.createElement('div');
-        const epRatio = getProgressRatio(currentPodcast?.id, ep.id, ep.duration);
-        item.className = epRatio >= 0.95 ? 'ep-item listened' : 'ep-item';
+        const epRatio = getProgressRatio(currentPodcast?.id, ep.id, epDurationSec(ep));
+        item.className = epRatio >= 0.98 ? 'ep-item listened' : 'ep-item';
+        item.dataset.epId = ep.id;
+        item.dataset.epDuration = epDurationSec(ep) || 0;
 
+        const thumbWrap = document.createElement('div');
+        thumbWrap.className = 'ep-thumb-wrap';
         const thumb = document.createElement('img');
         thumb.className = 'ep-thumb';
         thumb.src = ep.image || podcastImage;
+        const progressBar = document.createElement('div');
+        progressBar.className = 'ep-progress-bar';
+        const progressFill = document.createElement('div');
+        progressFill.className = 'ep-progress-fill';
+        progressFill.style.width = (epRatio > 0 ? Math.min(epRatio * 100, 100).toFixed(1) : '0') + '%';
+        progressBar.appendChild(progressFill);
+        thumbWrap.appendChild(thumb);
+        if (epRatio > 0) thumbWrap.appendChild(progressBar);
 
         const info = document.createElement('div');
         info.className = 'ep-info';
-        const listenedBadge = epRatio >= 0.95 ? '<div class="ep-listened-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Ascoltato</div>' : '';
-        info.innerHTML = `<div class="ep-title">${decodeHTML(ep.title)}</div><div class="ep-desc">${decodeHTML(ep.summary || stripHTML(ep.content_html || ''))}</div>${listenedBadge}`;
+        const listenedBadge = epRatio >= 0.98 ? '<div class="ep-listened-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Ascoltato</div>' : '';
+        const epDate = ep.timestamp ? formatDate(ep.timestamp) : '';
+        const epMins = epDurationSec(ep) ? Math.round(epDurationSec(ep) / 60) + ' min' : '';
+        const epMeta = [epDate, epMins].filter(Boolean).join(' · ');
+        info.innerHTML = `<div class="ep-title">${decodeHTML(ep.title)}</div><div class="ep-desc">${decodeHTML(ep.summary || stripHTML(ep.content_html || ''))}</div>${epMeta ? `<div class="ep-meta">${epMeta}</div>` : ''}${listenedBadge}`;
 
         const playBtn = makePlayBtn(() => {
             currentEpisodeIndex = epIndex;
@@ -774,10 +816,13 @@ function renderEpisodes(episodes, podcastImage) {
             queueBtn.title = inQ ? 'Rimuovi dalla coda' : 'Aggiungi alla coda';
             queueBtn.innerHTML = inQ ? svgRemove : svgAdd;
         });
-        item.appendChild(thumb);
+        const btnGroup = document.createElement('div');
+        btnGroup.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:2px;flex-shrink:0;';
+        btnGroup.appendChild(playBtn);
+        btnGroup.appendChild(queueBtn);
+        item.appendChild(thumbWrap);
         item.appendChild(info);
-        item.appendChild(queueBtn);
-        item.appendChild(playBtn);
+        item.appendChild(btnGroup);
         item.onclick = () => playBtn.click();
         container.appendChild(item);
     });
@@ -863,7 +908,9 @@ function play(url, title, author, image) {
         currentHls.attachMedia(audio);
         currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
             const saved = loadProgress(podcastId, episodeId);
-            if (saved > 5) audio.currentTime = saved;
+            const dur = epDurationSec(ep) || audio.duration || 0;
+            const ratio = dur > 0 ? saved / dur : 0;
+            if (saved > 5 && ratio < 0.98) audio.currentTime = saved;
             audio.play(); audio.playbackRate = speeds[speedIndex];
         });
     } else {
@@ -871,7 +918,9 @@ function play(url, title, author, image) {
         audio.addEventListener('loadedmetadata', function onSeek() {
             audio.removeEventListener('loadedmetadata', onSeek);
             const saved = loadProgress(podcastId, episodeId);
-            if (saved > 5) audio.currentTime = saved;
+            const dur = epDurationSec(ep) || audio.duration || 0;
+            const ratio = dur > 0 ? saved / dur : 0;
+            if (saved > 5 && ratio < 0.98) audio.currentTime = saved;
             audio.play(); audio.playbackRate = speeds[speedIndex];
         });
     }
@@ -890,26 +939,76 @@ function play(url, title, author, image) {
 }
 
 document.getElementById('pp-bar').onclick = () => { if (audio.paused) audio.play(); else audio.pause(); };
+
+// ── Aggiorna stati episodi nel DOM senza re-render ────────────
+function refreshEpisodeStates() {
+    if (viewDetail.style.display === 'none' || !currentPodcast) return;
+    document.querySelectorAll('#ep-items .ep-item[data-ep-id]').forEach((item) => {
+        const epId = item.dataset.epId;
+        const epDuration = parseFloat(item.dataset.epDuration) || 0;
+        const ratio = getProgressRatio(currentPodcast.id, epId, epDuration);
+        // Classe listened
+        item.classList.toggle('listened', ratio >= 0.98);
+        // Badge ascoltato
+        const badge = item.querySelector('.ep-listened-badge');
+        if (ratio >= 0.98 && !badge) {
+            const info = item.querySelector('.ep-info');
+            const b = document.createElement('div');
+            b.className = 'ep-listened-badge';
+            b.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Ascoltato';
+            info.appendChild(b);
+        } else if (ratio < 0.98 && badge) {
+            badge.remove();
+        }
+        // Barra progresso
+        const wrap = item.querySelector('.ep-thumb-wrap');
+        if (!wrap) return;
+        let bar = wrap.querySelector('.ep-progress-bar');
+        if (ratio > 0) {
+            if (!bar) {
+                bar = document.createElement('div'); bar.className = 'ep-progress-bar';
+                const fill = document.createElement('div'); fill.className = 'ep-progress-fill';
+                bar.appendChild(fill); wrap.appendChild(bar);
+            }
+            bar.querySelector('.ep-progress-fill').style.width = Math.min(ratio * 100, 100).toFixed(1) + '%';
+        } else if (bar) {
+            bar.remove();
+        }
+    });
+}
+
 audio.onended = () => {
     const endedEp = currentEpisodeList[currentEpisodeIndex];
     if (currentPodcast?.id && endedEp?.id && audio.duration) {
         saveProgress(currentPodcast.id, endedEp.id, audio.duration);
     }
+    loadNewEpisodes(); // aggiorna sezione nuovi episodi rimuovendo quelli appena ascoltati
     // La coda ha sempre la precedenza
     if (episodeQueue.length > 0) {
         playFromQueue(0);
     } else if (!playingFromQueue && currentEpisodeIndex < currentEpisodeList.length - 1) {
-        // Nessuna coda: continua la playlist del podcast corrente
-        playEpisodeAtIndex(currentEpisodeIndex + 1);
+        // Nessuna coda: continua la playlist saltando gli episodi già ascoltati
+        let nextIndex = currentEpisodeIndex + 1;
+        while (nextIndex < currentEpisodeList.length) {
+            const ep = currentEpisodeList[nextIndex];
+            const dur = epDurationSec(ep);
+            const ratio = dur > 0 ? loadProgress(currentPodcast?.id, ep.id) / dur : 0;
+            if (ratio < 0.98) break; // episodio non ancora ascoltato, riproducilo
+            nextIndex++;
+        }
+        if (nextIndex < currentEpisodeList.length) {
+            playEpisodeAtIndex(nextIndex);
+        } else {
+            playingFromQueue = false;
+            document.getElementById('play-svg').style.display = '';
+            document.getElementById('pause-svg').style.display = 'none';
+        }
     } else {
         playingFromQueue = false;
         document.getElementById('play-svg').style.display = '';
         document.getElementById('pause-svg').style.display = 'none';
     }
-    if (viewDetail.style.display !== 'none' && currentPodcast) {
-        const renderedIds = Array.from(document.querySelectorAll('#ep-items .ep-queue-btn')).length;
-        if (renderedIds > 0) renderEpisodes(currentEpisodeList.slice(0, renderedIds), currentPodcast.image);
-    }
+    refreshEpisodeStates();
     renderResumeSection();
 };
 document.getElementById('prev-ep-btn').addEventListener('click', () => playEpisodeAtIndex(currentEpisodeIndex - 1));
@@ -924,6 +1023,7 @@ audio.ontimeupdate = () => {
     document.getElementById('exp-time-current').textContent = formatTime(audio.currentTime);
     if (Math.round(audio.currentTime) % 5 === 0) {
         saveProgress(currentPodcast?.id, currentEpisodeList[currentEpisodeIndex]?.id, audio.currentTime);
+        refreshEpisodeStates();
     }
 };
 audio.onloadedmetadata = () => {
@@ -1165,7 +1265,7 @@ function addToQueue(ep, podcastTitle, podcastImage) {
         image: ep.image || podcastImage || '',
         author: ep.author || podcastTitle || '',
         podcastTitle: podcastTitle || ep.author || '',
-        duration: ep.duration,
+        duration: epDurationSec(ep),
     });
     updateQueueBadge();
     refreshQueueButtons();
@@ -1197,14 +1297,10 @@ function refreshQueueButtons() {
 function playFromQueue(idx) {
     if (idx < 0 || idx >= episodeQueue.length) return;
     const item = episodeQueue[idx];
-    // Rimuovi dalla coda e aggiorna UI
     episodeQueue.splice(idx, 1);
     updateQueueBadge();
     renderQueuePanel();
     refreshQueueButtons();
-    // Segna che stiamo riproducendo dalla coda (non dal podcast corrente)
-    // Non tocchiamo currentEpisodeList né currentEpisodeIndex:
-    // al termine di questo episodio, onended controllerà prima la coda.
     playingFromQueue = true;
     play(item.url, item.title, item.author, item.image);
 }
