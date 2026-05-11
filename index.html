@@ -120,9 +120,18 @@
         .section-header h2 { margin-bottom: 0; }
         .section-header .chevron { flex-shrink: 0; transition: transform 0.25s ease; color: var(--muted); }
         .section-header.collapsed .chevron { transform: rotate(-90deg); }
-        .section-body { overflow: hidden; transition: max-height 0.3s ease, opacity 0.25s ease, padding-top 0.3s ease; max-height: 2000px; opacity: 1; padding-top: 12px; }
-        .section-body.collapsed { max-height: 0; opacity: 0; padding-top: 0; }
-
+         .section-body {
+          overflow: hidden;
+          transition: max-height 0.3s ease, opacity 0.25s ease, padding-top 0.3s ease;
+          max-height: 99999px;   /* ← era 2000px */
+          opacity: 1;
+          padding-top: 12px;
+}
+        .section-body.collapsed {
+          max-height: 0;
+          opacity: 0;
+          padding-top: 0;
+}
         #resume-section, #fav-episodes-section, #new-episodes-section, #all-podcasts-section { margin-bottom: 20px; }
 
         /* ── Titoli sezioni ──────────────────────────────────── */
