@@ -1,11 +1,13 @@
-const CACHE = "ilpost-v5.3";
+const CACHE = "ilpost-v5.4";
 const ASSETS = [
   "/postcast/",
   "/postcast/index.html",
   "/postcast/manifest.json",
   "/postcast/icon-180.png",
   "/postcast/icon-192.png",
-  "/postcast/icon-512.png"
+  "/postcast/icon-512.png",
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Il_Post_logo.svg/3840px-Il_Post_logo.svg.png',
+    'https://www.ilpost.it/error/images/ilpost-unleashed.svg'
 ];
 
 // ── Install: precache della shell ────────────────────────────
