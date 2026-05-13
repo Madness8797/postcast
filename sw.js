@@ -1,4 +1,4 @@
-const CACHE = "ilpost-v5.2";
+const CACHE = "ilpost-v5.3";
 const ASSETS = [
   "/postcast/",
   "/postcast/index.html",
