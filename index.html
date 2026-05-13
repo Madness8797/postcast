@@ -175,9 +175,58 @@
         .ep-progress-fill { height: 100%; background: #13C8E1; transition: width 0.3s ease; }
         .ep-item.listened .ep-progress-bar { display: none; }
 
-        #offline-banner { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #ff9500; color: #fff; text-align: center; font-size: 13px; font-weight: 700; padding: 10px 16px; animation: slideDown 0.3s ease; }
-        #offline-banner.visible { display: block; }
-        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+#offline-banner {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: var(--bg);
+    flex-direction: column;
+}
+#offline-banner.visible { display: flex; }
+
+#offline-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--header-bg);
+}
+#offline-logo { height: 28px; width: auto; }
+#offline-logo-dark { height: 28px; width: auto; display: none; filter: brightness(0) invert(1); }
+@media (prefers-color-scheme: dark) {
+    #offline-logo { display: none; }
+    #offline-logo-dark { display: block; }
+}
+
+#offline-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 40px 32px;
+}
+#offline-svg {
+    width: min(220px, 45vw);
+    height: auto;
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+@media (prefers-color-scheme: dark) {
+    #offline-svg { filter: invert(1); }
+}
+#offline-text {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text);
+    max-width: 260px;
+}
+#offline-text strong {
+    font-size: 22px;
+    font-weight: 800;
+}
 
         .ep-item.listened { opacity: 0.52; }
         .ep-item.listened .ep-title { color: var(--muted); }
@@ -246,7 +295,20 @@
 </head>
 <body>
 
-<div id="offline-banner">📡 Sei offline — i contenuti potrebbero non essere aggiornati</div>
+<!-- Sostituisci il vecchio <div id="offline-banner"> con questo -->
+<div id="offline-banner">
+    <div id="offline-header">
+        <img id="offline-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Il_Post_logo.svg/3840px-Il_Post_logo.svg.png" alt="Il Post">
+        <img id="offline-logo-dark" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Il_Post_logo.svg/3840px-Il_Post_logo.svg.png" alt="Il Post">
+    </div>
+    <div id="offline-body">
+        <img id="offline-svg" src="https://www.ilpost.it/error/images/ilpost-unleashed.svg" alt="">
+        <div id="offline-text">
+            <strong>Ciao.</strong><br>
+            Al momento risulti offline.<br>Controlla la connessione e riprova.
+        </div>
+    </div>
+</div>
 <div id="ptr-indicator"><div id="ptr-spinner"></div></div>
 
 <header>
@@ -926,7 +988,7 @@ searchInput.oninput = () => {
     renderPodcasts(getFilteredPodcasts());
     clearTimeout(searchEpTimeout);
     if (q.length >= 3) {
-        searchEpTimeout = setTimeout(() => searchEpisodes(q), 500);
+        searchEpTimeout = setTimeout(() => searchEpisodes(q), );
     } else {
         $('episode-search-results')?.remove();
     }
