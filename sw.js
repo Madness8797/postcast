@@ -1,16 +1,14 @@
 const CACHE = "ilpost-v5.4";
+
 const ASSETS = [
   "/postcast/",
   "/postcast/index.html",
   "/postcast/manifest.json",
   "/postcast/icon-180.png",
   "/postcast/icon-192.png",
-  "/postcast/icon-512.png",
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Il_Post_logo.svg/3840px-Il_Post_logo.svg.png',
-    'https://www.ilpost.it/error/images/ilpost-unleashed.svg'
+  "/postcast/icon-512.png"
 ];
 
-// ── Install: precache della shell ────────────────────────────
 self.addEventListener("install", e => {
   e.waitUntil(
     caches.open(CACHE).then(c => c.addAll(ASSETS))
@@ -18,7 +16,6 @@ self.addEventListener("install", e => {
   self.skipWaiting();
 });
 
-// ── Activate: elimina cache vecchie ─────────────────────────
 self.addEventListener("activate", e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -28,18 +25,14 @@ self.addEventListener("activate", e => {
   self.clients.claim();
 });
 
-// ── Fetch ────────────────────────────────────────────────────
 self.addEventListener("fetch", e => {
   const url = e.request.url;
 
-  // API Il Post e proxy codetabs: sempre network, mai cache
-  // (i contenuti podcast devono essere sempre aggiornati)
   if (url.includes("ilpost.it") || url.includes("codetabs")) {
     e.respondWith(fetch(e.request));
     return;
   }
 
-  // Copertine podcast (wikimedia, cdn, etc.): network-first con fallback cache
   if (url.includes("wikimedia.org") || url.includes("cdn.") || url.match(/\.(png|jpg|jpeg|webp|svg)$/i)) {
     e.respondWith(
       fetch(e.request)
@@ -55,7 +48,6 @@ self.addEventListener("fetch", e => {
     return;
   }
 
-  // Tutto il resto (shell, manifest, icone, hls.js): cache-first
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );
